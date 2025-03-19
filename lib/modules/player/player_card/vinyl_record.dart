@@ -1,3 +1,4 @@
+import "dart:math";
 import "package:flutter/material.dart";
 
 class VinylRecordWidget extends StatefulWidget {
@@ -65,8 +66,7 @@ class VinylRecordWidgetState extends State<VinylRecordWidget>
   }
 
   void _loadLocalImage() {
-    final ImageProvider localImageProvider =
-        AssetImage(widget.errorAlbumCoverUrl);
+    final ImageProvider localImageProvider = AssetImage(widget.errorAlbumCoverUrl);
     localImageProvider.resolve(const ImageConfiguration()).addListener(
       ImageStreamListener(
         (ImageInfo info, bool synchronousCall) {
@@ -107,7 +107,6 @@ class VinylRecordWidgetState extends State<VinylRecordWidget>
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    // 整体宽高缩小一半
     final containerSize = screenWidth * 0.9;
     final recordSize = containerSize * 0.9;
 
@@ -124,8 +123,8 @@ class VinylRecordWidgetState extends State<VinylRecordWidget>
                 boxShadow: const [
                   BoxShadow(
                     color: Color.fromARGB(255, 50, 50, 50),
-                    offset: Offset(5, 3), // 阴影偏移量
-                    blurRadius: 5, // 阴影模糊半径
+                    offset: Offset(5, 3),
+                    blurRadius: 5,
                   ),
                 ],
                 borderRadius: const BorderRadius.all(Radius.circular(4)),
@@ -183,74 +182,75 @@ class VinylRecordPainter extends CustomPainter {
     final center = Offset(size.width / 2, size.height / 2);
     final radius = size.width / 2;
 
-    // 绘制黑胶唱片的背景
+    // 绘制黑胶背景
     final backgroundPaint = Paint()
       ..color = Colors.black
       ..style = PaintingStyle.fill;
     canvas.drawCircle(center, radius, backgroundPaint);
 
-    // 绘制唱片的纹路，添加明度渐变
+    // 创建固定随机种子
+    final random = Random(12345);
+
+    // 绘制纹路和磨损点
     for (double r = radius * 0.2; r < radius * 0.9; r += 5) {
-      // 计算当前半径对应的明度（从中心向外逐渐变暗）
-      final brightness = 1.0 - (r / radius); // 明度从 1.0（最亮）到 0.1（最暗）
+      final brightness = 1.0 - (r / radius);
       final randomColor = Color.fromRGBO(
-        (20 + (r % 30) * brightness).toInt(), // R 分量
-        (20 + (r % 30) * brightness).toInt(), // G 分量
-        (20 + (r % 30) * brightness).toInt(), // B 分量
-        1, // 不透明度
+        (20 + (r % 30) * brightness).toInt(),
+        (20 + (r % 30) * brightness).toInt(),
+        (20 + (r % 30) * brightness).toInt(),
+        1,
       );
+      
+      // 主纹路
       final groovePaint = Paint()
         ..color = randomColor
         ..style = PaintingStyle.stroke
-        ..strokeWidth = (1 + (r % 3) / 3); // 线条粗细
+        ..strokeWidth = (1 + (r % 3) / 3);
       canvas.drawCircle(center, r, groovePaint);
+
+      // 添加磨损点
+      const angleStep = 2 * pi / 3; // 3个点/环
+      final baseAngle = random.nextDouble() * 2 * pi;
+      for (int i = 0; i < 8; i++) {
+        if (random.nextDouble() > 0.6) continue; // 40%概率跳过
+        
+        final angle = baseAngle + i * angleStep + random.nextDouble() * 0.2 - 0.1;
+        final dotRadius = r + random.nextDouble() * 4 - 2;
+        final position = Offset(
+          center.dx + dotRadius * cos(angle),
+          center.dy + dotRadius * sin(angle),
+        );
+        
+        final dotPaint = Paint()
+          // ignore: deprecated_member_use
+          ..color = randomColor.withOpacity(0.8)
+          ..style = PaintingStyle.fill;
+        
+        canvas.drawCircle(
+          position,
+          1.5 + random.nextDouble() * 1.5, // 1.5-3px
+          dotPaint,
+        );
+      }
     }
 
-    // 扩大唱片中心区域并绘制圆形裁切后的专辑封面
-    final coverRadius = radius * 0.05 * 5; // 扩大 5 倍
+    // 专辑封面
+    final coverRadius = radius * 0.25;
     final coverRect = Rect.fromCircle(center: center, radius: coverRadius);
-
-    // 创建圆形裁剪路径
-    final path = Path();
-    path.addOval(coverRect);
+    final path = Path()..addOval(coverRect);
     canvas.clipPath(path);
 
-    if (imageInfo != null) {
-      // 计算适配后的图片区域
-      final sourceSize = Size(imageInfo!.image.width.toDouble(),
-          imageInfo!.image.height.toDouble());
-      final destinationSize = coverRect.size;
-      final fittedSizes =
-          applyBoxFit(BoxFit.cover, sourceSize, destinationSize);
-      final sourceRect = Alignment.center
-          .inscribe(fittedSizes.source, Offset.zero & sourceSize);
-      final destinationRect =
-          Alignment.center.inscribe(fittedSizes.destination, coverRect);
-
-      canvas.drawImageRect(
-        imageInfo!.image,
-        sourceRect,
-        destinationRect,
-        Paint(),
+    final ImageInfo? targetImage = imageInfo ?? localImageInfo;
+    if (targetImage != null) {
+      final sourceSize = Size(
+        targetImage.image.width.toDouble(),
+        targetImage.image.height.toDouble(),
       );
-    } else if (localImageInfo != null) {
-      // 计算适配后的图片区域
-      final sourceSize = Size(localImageInfo!.image.width.toDouble(),
-          localImageInfo!.image.height.toDouble());
-      final destinationSize = coverRect.size;
-      final fittedSizes =
-          applyBoxFit(BoxFit.cover, sourceSize, destinationSize);
-      final sourceRect = Alignment.center
-          .inscribe(fittedSizes.source, Offset.zero & sourceSize);
-      final destinationRect =
-          Alignment.center.inscribe(fittedSizes.destination, coverRect);
-
-      canvas.drawImageRect(
-        localImageInfo!.image,
-        sourceRect,
-        destinationRect,
-        Paint(),
-      );
+      final fitted = applyBoxFit(BoxFit.cover, sourceSize, coverRect.size);
+      final sourceRect = Alignment.center.inscribe(fitted.source, Offset.zero & sourceSize);
+      final destRect = Alignment.center.inscribe(fitted.destination, coverRect);
+      
+      canvas.drawImageRect(targetImage.image, sourceRect, destRect, Paint());
     }
   }
 
