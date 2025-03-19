@@ -8,9 +8,6 @@ class CacheKey {
   /// 当前播放的歌曲
   static String playerCurrent = "player_current";
 
-  /// 播放历史
-  static String playerHistoryList = "player_history_list";
-
   /// 播放模式
   static String playerMode = "player_mode";
 

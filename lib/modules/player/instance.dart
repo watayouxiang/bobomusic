@@ -18,7 +18,6 @@ const uuid = Uuid();
 var db = DBOrder();
 
 final _storageKeyCurrent = CacheKey.playerCurrent;
-final _storageKeyHistoryList = CacheKey.playerHistoryList;
 final _storageKeyPlayerMode = CacheKey.playerMode;
 final _storageKeyPosition = CacheKey.playerPosition;
 
@@ -424,14 +423,6 @@ class BBPlayer {
     EasyLoading.dismiss();
   }
 
-  // 添加到播放历史（用于随机播放）
-  void _addPlayerHistory() {
-    if (current != null) {
-      _playerHistory.removeWhere((e) => e == current!.id);
-      _playerHistory.add(current!.id);
-    }
-  }
-
   Future<void> _play({MusicItem? music, bool isPlay = true}) async {
     if (music != null) {
       if (music.localPath.isNotEmpty) {
@@ -469,10 +460,6 @@ class BBPlayer {
       localStorage.setString(
         _storageKeyPlayerMode,
         playerMode.value.toString(),
-      );
-      localStorage.setStringList(
-        _storageKeyHistoryList,
-        _playerHistory,
       );
     });
   }
@@ -513,13 +500,6 @@ class BBPlayer {
     String? m = localStorage.getString(_storageKeyPlayerMode);
     if (m != null && m.isNotEmpty) {
       playerMode = PlayerMode.getByValue(int.parse(m));
-    }
-
-    // 播放历史
-    List<String>? h = localStorage.getStringList(_storageKeyHistoryList);
-    if (h != null && h.isNotEmpty) {
-      _playerHistory.clear();
-      _playerHistory.addAll(h);
     }
 
     // 待播放列表
