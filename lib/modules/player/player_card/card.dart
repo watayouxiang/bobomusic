@@ -96,7 +96,7 @@ class PlayerCardState extends State<PlayerCard> {
       builder: (context, player, child) {
         final musicItem = player.current as MusicItem;
         final isLocal = musicItem.localPath.isNotEmpty;
-        String subTitle = player.current!.orderName;
+        String subTitle = player.current!.orderName.isEmpty ? "未知歌单" : player.current!.orderName;
         final Color primaryColor = Theme.of(context).primaryColor;
 
         if (player.current!.author.isNotEmpty) {

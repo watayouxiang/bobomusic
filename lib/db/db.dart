@@ -90,7 +90,8 @@ abstract class BaseDatabaseHelper {
     return result.isNotEmpty;
   }
 
-  Future<List<Map<String, dynamic>>> queryAll(String tableName, {String? groupBy = "name"}) async {
+  Future<List<Map<String, dynamic>>> queryAll(String tableName, {String? groupBy = "name", bool? needOrder}) async {
+    final isOrder = needOrder ?? true;
     try {
       Database db = await database;
       return await db.rawQuery("""
@@ -99,7 +100,7 @@ abstract class BaseDatabaseHelper {
           SELECT MIN(id) FROM $tableName
           GROUP BY $groupBy
         )
-        ORDER BY name DESC
+        ${isOrder ? "ORDER BY name DESC" : ""}
       """);
     } catch (e) {
       print("Query error: $e");
