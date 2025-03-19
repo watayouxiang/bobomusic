@@ -52,10 +52,12 @@ class MusicListTitleState extends State<MusicListTile> with SingleTickerProvider
     
     return Consumer<PlayerModel>(builder: (context, player, child) {
       if (player.current != null) {
-        if (player.current!.playId.isNotEmpty && player.current!.orderName.isNotEmpty && widget.music.orderName.isNotEmpty) {
+        if (player.current!.playId.isNotEmpty && player.current!.orderName.isNotEmpty) {
           isPlaying = player.current!.playId == widget.music.playId && player.current!.orderName == widget.music.orderName;
-        } else {
+        } else if (player.current!.orderName.isEmpty && widget.music.orderName.isEmpty) {
           isPlaying = player.current!.id == widget.music.id;
+        } else {
+          isPlaying = false;
         }
       }
 

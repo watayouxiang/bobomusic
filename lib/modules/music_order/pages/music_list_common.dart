@@ -50,7 +50,7 @@ class MusicListCommonState extends State<MusicListCommon> {
       setState(() {
         musicList = musics;
       });
-    } else {
+    } else if (mounted) {
       setState(() {
         musicList = [];
       });

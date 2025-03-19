@@ -95,7 +95,7 @@ class BBPlayer {
     if (music != null) {
       if (
         current == null ||
-        current!.playId.isEmpty ||
+        (current!.orderName != music.orderName) ||
         (current!.playId.isNotEmpty && current!.playId != music.playId) ||
         current!.id != music.id
       ) {
