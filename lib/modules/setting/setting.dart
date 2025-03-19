@@ -1,4 +1,3 @@
-import "package:bobomusic/components/custom_dialog/custom_dialog.dart";
 import "package:bobomusic/constants/cache_key.dart";
 import "package:bobomusic/db/db.dart";
 import "package:bobomusic/event_bus/event_bus.dart";
@@ -53,30 +52,11 @@ class SettingViewState extends State<SettingView> with AutomaticKeepAliveClientM
                             return ThemeColorSetting(
                               initialColor: initialColor,
                               onColorChanged: (color, colorName, callback) async {
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) => CustomDialog(
-                                    title: "提示",
-                                    body: const Text("更换主题色会清空待播放列表，是否继续?"),
-                                    onConfirm: () async {
-                                      await db.deleteAll(TableName.musicWaitPlay);
-                                      
-                                      eventBus.fire(ThemeColorChanged(color));
-              
-                                      final localStorage = await SharedPreferences.getInstance();
-                                      // ignore: deprecated_member_use
-                                      localStorage.setString(CacheKey.themeColor, colorName);
-
-                                      callback();
-
-                                      // ignore: use_build_context_synchronously
-                                      Navigator.of(context).pop();
-                                    },
-                                    onCancel: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                  )
-                                );
+                                eventBus.fire(ThemeColorChanged(color));
+                                final localStorage = await SharedPreferences.getInstance();
+                                // ignore: deprecated_member_use
+                                localStorage.setString(CacheKey.themeColor, colorName);
+                                callback();
                               }
                             );
                           },

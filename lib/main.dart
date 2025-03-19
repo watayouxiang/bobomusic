@@ -120,10 +120,14 @@ class MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    // 初始化播放器
+    Provider.of<PlayerModel>(context, listen: false).init(
+      playerHandler: widget.playerHandler,
+      playerService: widget.playerService,
+    );
     _currentTheme = widget.initialTheme;
     // 监听主题色变更事件
     eventBus.on<ThemeColorChanged>().listen((event) {
-      widget.playerHandler.player.clearPlayerList();
       setState(() {
         primaryColor = event.newColor;
         _currentTheme = _currentTheme.copyWith(
@@ -147,18 +151,13 @@ class MyAppState extends State<MyApp> {
       navigatorObservers: [BotToastNavigatorObserver()],
       builder: (context, child) {
         child = EasyLoading.init()(context, child);
-        // 初始化播放器
-        Provider.of<PlayerModel>(context, listen: false).init(
-          playerHandler: widget.playerHandler,
-          playerService: widget.playerService,
-        );
+        child = botToastBuilder(context, child);
         // 消息提示框的默认配置
         BotToast.defaultOption.text.duration = const Duration(seconds: 3);
         BotToast.defaultOption.text.textStyle = TextStyle(
           fontSize: 12,
           color: Theme.of(context).cardColor,
         );
-        child = botToastBuilder(context, child);
         // Timer(const Duration(seconds: 1), () {
         //   updateAppVersion();
         // });
