@@ -86,7 +86,7 @@ class MusicLocalState extends State<MusicLocal> {
           height: MediaQuery.of(context).size.height - 240,
           child: EmptyPage(
             imageTopPadding: 50,
-            imageBottomPadding: 100,
+            imageBottomPadding: 50,
             text: "你还没有本地音乐",
             btns: [
               const SizedBox(height: 32),
