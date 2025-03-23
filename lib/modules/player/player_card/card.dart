@@ -63,7 +63,7 @@ class PlayerCardState extends State<PlayerCard> {
     }
   }
 
-    @override
+  @override
   void dispose() {
     _imageStream?.removeListener(
       ImageStreamListener(
@@ -120,8 +120,6 @@ class PlayerCardState extends State<PlayerCard> {
               ),
             ),
             Container(
-              height: MediaQuery.of(context).size.height,
-              padding: const EdgeInsets.only(top: 10),
               decoration: BoxDecoration(
                 color: Theme.of(context).cardColor.withValues(alpha: 0.5),
               ),
@@ -129,7 +127,7 @@ class PlayerCardState extends State<PlayerCard> {
                 children: [
                   Container(
                     height: 50,
-                    padding: const EdgeInsets.only(left: 16, top: 20, right: 20),
+                    padding: const EdgeInsets.only(left: 16, top: 40, right: 20),
                     child: Row(
                       children: [
                         InkWell(
@@ -144,128 +142,127 @@ class PlayerCardState extends State<PlayerCard> {
                       ],
                     ),
                   ),
-                  Container(
-                    height: MediaQuery.of(context).size.height / 2 - 30,
-                    padding: const EdgeInsets.only(left: 20, top: 20, right: 20),
-                    child: ClipRRect(
-                      borderRadius: const BorderRadius.all(Radius.circular(10)),
-                      child: VinylRecordWidget(
-                        albumCoverUrl: coverUrl,
-                        errorAlbumCoverUrl: errorCoverUrl,
-                        isPlaying: player.isPlaying,
-                      )
-                    ),
-                  ),
                   Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.only(
-                            left: 30,
-                            top: 20,
-                            right: 30,
-                            bottom: 20,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.only(left: 20, top: 30, right: 20),
+                            child: ClipRRect(
+                              borderRadius: const BorderRadius.all(Radius.circular(10)),
+                              child: VinylRecordWidget(
+                                albumCoverUrl: coverUrl,
+                                errorAlbumCoverUrl: errorCoverUrl,
+                                isPlaying: player.isPlaying,
+                              )
+                            ),
                           ),
-                          child: Align(
-                            alignment: Alignment.center,
-                            child: Column(
+                          Container(
+                            padding: const EdgeInsets.only(
+                              left: 30,
+                              top:30,
+                              right: 30,
+                              bottom: 20,
+                            ),
+                            child: Align(
+                              alignment: Alignment.center,
+                              child: Column(
+                                children: [
+                                  Text(
+                                    player.current!.name,
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      overflow: TextOverflow.ellipsis,
+                                      color: primaryColor,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Text(
+                                    subTitle,
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      overflow: TextOverflow.ellipsis,
+                                      color: primaryColor,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  )
+                                ],
+                              )
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          Container(
+                            padding: const EdgeInsets.only(right: 95, left: 95),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
-                                  player.current!.name,
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    overflow: TextOverflow.ellipsis,
-                                    color: primaryColor,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                                Text(
-                                  subTitle,
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    overflow: TextOverflow.ellipsis,
-                                    color: primaryColor,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                )
-                              ],
-                            )
-                          ),
-                        ),
-                        const SizedBox(height: 30),
-                        Container(
-                          padding: const EdgeInsets.only(right: 95, left: 95),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              InkWell(
-                                child: Icon(Icons.download_outlined, color: primaryColor, size: 30),
-                                onTap: () {
-                                  if (isLocal) {
-                                    BotToast.showText(text: "本地音乐，无需下载");
-                                    return;
-                                  }
-
-                                  final downloadModel = Provider.of<DownloadModel>(context, listen: false);
-                                  downloadModel.download([musicItem]);
-                                },
-                              ),
-                              const SizedBox(width: 50),
-                              InkWell(
-                                child: isLike ? const Icon(Icons.favorite, size: 30, color: Colors.red) : Icon(Icons.favorite_border_rounded, color: primaryColor, size: 30),
-                                onTap: () async {
-                                  try {
-                                    if (!isLike) {
-                                      await db.insert(
-                                        TableName.musicILike,
-                                        musicItem2Row(music: player.current!.copyWith(orderName: TableName.musicILike, playId: uuid.v4()))
-                                      );
-
-                                      setState(() {
-                                        isLike = true;
-                                      });
-
-                                      BotToast.showText(text: "已喜欢");
-                                    } else {
-                                      await db.delete(TableName.musicILike, player.current!.name);
-
-                                      setState(() {
-                                        isLike = false;
-                                      });
-
-                                      BotToast.showText(text: "取消喜欢");
+                                InkWell(
+                                  child: Icon(Icons.download_outlined, color: primaryColor, size: 30),
+                                  onTap: () {
+                                    if (isLocal) {
+                                      BotToast.showText(text: "本地音乐，无需下载");
+                                      return;
                                     }
 
-                                    eventBus.fire(RefreshMusicList(tabName: FrozenTab.iLike));
-                                  } catch (error) {
-                                    print(error);
-                                  }
-                                },
-                              ),
+                                    final downloadModel = Provider.of<DownloadModel>(context, listen: false);
+                                    downloadModel.download([musicItem]);
+                                  },
+                                ),
+                                const SizedBox(width: 50),
+                                InkWell(
+                                  child: isLike ? const Icon(Icons.favorite, size: 30, color: Colors.red) : Icon(Icons.favorite_border_rounded, color: primaryColor, size: 30),
+                                  onTap: () async {
+                                    try {
+                                      if (!isLike) {
+                                        await db.insert(
+                                          TableName.musicILike,
+                                          musicItem2Row(music: player.current!.copyWith(orderName: TableName.musicILike, playId: uuid.v4()))
+                                        );
+
+                                        setState(() {
+                                          isLike = true;
+                                        });
+
+                                        BotToast.showText(text: "已喜欢");
+                                      } else {
+                                        await db.delete(TableName.musicILike, player.current!.name);
+
+                                        setState(() {
+                                          isLike = false;
+                                        });
+
+                                        BotToast.showText(text: "取消喜欢");
+                                      }
+
+                                      eventBus.fire(RefreshMusicList(tabName: FrozenTab.iLike));
+                                    } catch (error) {
+                                      print(error);
+                                    }
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          const PlayerProgress(),
+                          const SizedBox(height: 30),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              ModeButton(size: 30, color: primaryColor),
+                              const SizedBox(width: 10),
+                              PrevButton(size: 40, color: primaryColor),
+                              const SizedBox(width: 10),
+                              PlayButton(size: 50, color: primaryColor),
+                              const SizedBox(width: 10),
+                              NextButton(size: 40, color: primaryColor),
+                              const SizedBox(width: 10),
+                              PlayerListButton(size: 30, color: primaryColor),
                             ],
                           ),
-                        ),
-                        const SizedBox(height: 20),
-                        const PlayerProgress(),
-                        const SizedBox(height: 30),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            ModeButton(size: 30, color: primaryColor),
-                            const SizedBox(width: 10),
-                            PrevButton(size: 40, color: primaryColor),
-                            const SizedBox(width: 10),
-                            PlayButton(size: 50, color: primaryColor),
-                            const SizedBox(width: 10),
-                            NextButton(size: 40, color: primaryColor),
-                            const SizedBox(width: 10),
-                            PlayerListButton(size: 30, color: primaryColor),
-                          ],
-                        ),
-                        const SizedBox(height: 70)
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -326,10 +323,10 @@ class _PlayerProgressState extends State<PlayerProgress> {
   @override
   Widget build(BuildContext context) {
     final Color primaryColor = Theme.of(context).primaryColor;
-    
+
     return Consumer<PlayerModel>(builder: (context, player, child) {
       int total = (player.duration?.inSeconds ?? 0);
-      
+
       return Column(
         children: [
           SliderTheme(

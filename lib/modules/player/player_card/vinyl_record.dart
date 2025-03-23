@@ -119,6 +119,7 @@ class VinylRecordWidgetState extends State<VinylRecordWidget>
             Container(
               width: containerSize / 2,
               height: containerSize,
+              margin: const EdgeInsets.symmetric(vertical: 10),
               decoration: BoxDecoration(
                 boxShadow: const [
                   BoxShadow(
@@ -200,7 +201,7 @@ class VinylRecordPainter extends CustomPainter {
         (20 + (r % 30) * brightness).toInt(),
         1,
       );
-      
+
       // 主纹路
       final groovePaint = Paint()
         ..color = randomColor
@@ -213,19 +214,19 @@ class VinylRecordPainter extends CustomPainter {
       final baseAngle = random.nextDouble() * 2 * pi;
       for (int i = 0; i < 8; i++) {
         if (random.nextDouble() > 0.6) continue; // 40%概率跳过
-        
+
         final angle = baseAngle + i * angleStep + random.nextDouble() * 0.2 - 0.1;
         final dotRadius = r + random.nextDouble() * 4 - 2;
         final position = Offset(
           center.dx + dotRadius * cos(angle),
           center.dy + dotRadius * sin(angle),
         );
-        
+
         final dotPaint = Paint()
           // ignore: deprecated_member_use
           ..color = randomColor.withOpacity(0.8)
           ..style = PaintingStyle.fill;
-        
+
         canvas.drawCircle(
           position,
           1.5 + random.nextDouble() * 1.5, // 1.5-3px
@@ -249,7 +250,7 @@ class VinylRecordPainter extends CustomPainter {
       final fitted = applyBoxFit(BoxFit.cover, sourceSize, coverRect.size);
       final sourceRect = Alignment.center.inscribe(fitted.source, Offset.zero & sourceSize);
       final destRect = Alignment.center.inscribe(fitted.destination, coverRect);
-      
+
       canvas.drawImageRect(targetImage.image, sourceRect, destRect, Paint());
     }
   }
