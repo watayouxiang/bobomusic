@@ -106,9 +106,12 @@ class VinylRecordWidgetState extends State<VinylRecordWidget>
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
+    final screenSize = MediaQuery.of(context).size;
+    final isLandscape = screenSize.width > screenSize.height;
+    final screenWidth = screenSize.width;
     final containerSize = screenWidth * 0.9;
     final recordSize = containerSize * 0.9;
+
 
     return Stack(
       alignment: Alignment.center,
@@ -121,14 +124,14 @@ class VinylRecordWidgetState extends State<VinylRecordWidget>
               height: containerSize,
               margin: const EdgeInsets.symmetric(vertical: 10),
               decoration: BoxDecoration(
-                boxShadow: const [
+                boxShadow: isLandscape ? null : const [
                   BoxShadow(
                     color: Color.fromARGB(255, 50, 50, 50),
                     offset: Offset(5, 3),
                     blurRadius: 5,
                   ),
                 ],
-                borderRadius: const BorderRadius.all(Radius.circular(4)),
+                borderRadius: BorderRadius.all(Radius.circular(isLandscape ? 8 : 4)),
                 image: _imageInfo != null
                   ? DecorationImage(
                       image: _imageProvider!,
@@ -140,24 +143,25 @@ class VinylRecordWidgetState extends State<VinylRecordWidget>
                     ),
               ),
             ),
-            ClipRect(
-              child: Align(
-                alignment: Alignment.centerRight,
-                widthFactor: 0.5,
-                child: RotationTransition(
-                  turns: _rotationAnimation,
-                  child: CustomPaint(
-                    size: Size(recordSize, recordSize),
-                    painter: VinylRecordPainter(
-                      imageInfo: _imageInfo,
-                      localImageInfo: _localImageInfo,
-                      albumCoverSize: Size(containerSize, containerSize),
-                      localImagePath: widget.errorAlbumCoverUrl,
+            if (!isLandscape)
+              ClipRect(
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  widthFactor: 0.5,
+                  child: RotationTransition(
+                    turns: _rotationAnimation,
+                    child: CustomPaint(
+                      size: Size(recordSize, recordSize),
+                      painter: VinylRecordPainter(
+                        imageInfo: _imageInfo,
+                        localImageInfo: _localImageInfo,
+                        albumCoverSize: Size(containerSize, containerSize),
+                        localImagePath: widget.errorAlbumCoverUrl,
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ),
+              )
           ],
         ),
       ],

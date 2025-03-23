@@ -120,7 +120,7 @@ class PrevButtonState extends State<PrevButton> {
   @override
   Widget build(BuildContext context) {
     Color primaryColor = Theme.of(context).primaryColor;
-    
+
     return Consumer<PlayerModel>(
       builder: (context, player, child) {
         final disabled = (player.playerMode == PlayerMode.random || player.playerMode == PlayerMode.signalLoop || (player.current?.prev != null && player.current!.prev.isEmpty));
@@ -302,10 +302,35 @@ Future<void>? showPlayerCard(BuildContext context) {
   final NavigatorState navigator = Navigator.of(context, rootNavigator: false);
   final player = Provider.of<PlayerModel>(context, listen: false);
   if (player.current == null) return null;
-  return navigator.push(ModalBottomSheetRoute(
-    isScrollControlled: true,
-    builder: (context) {
-      return const PlayerCard();
-    },
-  ));
+  final screenSize = MediaQuery.of(context).size;
+  final isLandscape = screenSize.width > screenSize.height;
+
+  if (isLandscape) {
+     return navigator.push(ModalBottomSheetRoute(
+      isScrollControlled: true,
+      // 自定义形状
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(0),
+        ),
+      ),
+      // 设置背景颜色
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      // 设置弹框的约束条件
+      constraints: BoxConstraints(
+        minWidth: MediaQuery.of(context).size.width,
+        maxWidth: MediaQuery.of(context).size.width,
+      ),
+      builder: (context) {
+        return const PlayerCard();
+      },
+    ));
+  } else {
+     return navigator.push(ModalBottomSheetRoute(
+      isScrollControlled: true,
+      builder: (context) {
+        return const PlayerCard();
+      },
+    ));
+  }
 }
