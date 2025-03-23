@@ -83,11 +83,13 @@ class MusicLocalState extends State<MusicLocal> {
     return Scaffold(
       body: musicList.isEmpty ?
         SizedBox(
-          height: MediaQuery.of(context).size.height - 300,
+          height: MediaQuery.of(context).size.height - 240,
           child: EmptyPage(
+            imageTopPadding: 50,
+            imageBottomPadding: 100,
             text: "你还没有本地音乐",
             btns: [
-              const SizedBox(height: 16),
+              const SizedBox(height: 32),
               TextButton(
                 style: TextButton.styleFrom(
                   backgroundColor: Theme.of(context).primaryColor,
@@ -123,13 +125,13 @@ class MusicLocalState extends State<MusicLocal> {
   /// 扫描本地音乐
   Future<void> scanLocalMusics() async {
     final hasPermission = await requestPermissions();
-    
+
     if (!hasPermission) {
       return;
     }
-    
+
     EasyLoading.show(maskType: EasyLoadingMaskType.black);
-    
+
     Timer(const Duration(seconds: 1), () async {
       await scanLocalMusics0();
       EasyLoading.dismiss();
