@@ -144,7 +144,7 @@ class SettingViewState extends State<SettingView> with AutomaticKeepAliveClientM
                   backgroundImage: AssetImage("assets/ic_launch.png"),
                 ),
                 SizedBox(width: 6),
-                Text("啵啵音乐v1.1.0", style: TextStyle(color: Colors.grey, fontSize: 12)),
+                Text("啵啵音乐v1.2.0", style: TextStyle(color: Colors.grey, fontSize: 12)),
               ],
             ),
             const SizedBox(height: 6),
