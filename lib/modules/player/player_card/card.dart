@@ -1,6 +1,7 @@
 import "dart:async";
 import "dart:ui";
 
+import "package:bobomusic/icons/icons_svg.dart";
 import "package:bobomusic/modules/music_order/components/top_bar.dart";
 import "package:bobomusic/constants/covers.dart";
 import "package:bobomusic/db/db.dart";
@@ -13,7 +14,10 @@ import "package:flutter/material.dart";
 import "package:bobomusic/modules/player/player.dart";
 import "package:bobomusic/modules/player/model.dart";
 import "package:bobomusic/utils/clear_html_tags.dart";
+import "package:flutter_easyloading/flutter_easyloading.dart";
+import "package:flutter_svg/flutter_svg.dart";
 import "package:provider/provider.dart";
+import "package:url_launcher/url_launcher.dart";
 import "package:uuid/uuid.dart";
 
 const uuid = Uuid();
@@ -93,6 +97,7 @@ class PlayerCardState extends State<PlayerCard> {
       height: 50,
       padding: const EdgeInsets.only(left: 16, top: 30, right: 20),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           InkWell(
             child: Align(
@@ -103,7 +108,7 @@ class PlayerCardState extends State<PlayerCard> {
             onTap: () {
               Navigator.of(context).pop();
             },
-          )
+          ),
         ],
       ),
     );
@@ -170,13 +175,30 @@ class PlayerCardState extends State<PlayerCard> {
     );
   }
 
+  Future<void> _launchBilibiliVideo(String bvId, PlayerModel player) async {
+    final url = "bilibili://video/$bvId";
+    EasyLoading.show(maskType: EasyLoadingMaskType.black);
+
+    try {
+      await launchUrl(Uri.parse(url));
+    } catch(error) {
+      final webUrl = "https://www.bilibili.com/video/$bvId/?spm_id_from=333.1007.tianma.1-2-2.click";
+      await launchUrl(Uri.parse(webUrl));
+    }
+
+    Timer(const Duration(seconds: 1), () {
+      player.pause();
+      EasyLoading.dismiss();
+    });
+  }
+
   Widget _buildActionButtons(Color primaryColor) {
     final player = Provider.of<PlayerModel>(context, listen: false);
     final musicItem = player.current as MusicItem;
     final isLocal = musicItem.localPath.isNotEmpty;
 
     return Container(
-      padding: const EdgeInsets.only(right: 95, left: 95),
+      padding: const EdgeInsets.only(right: 70, left: 70),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -193,7 +215,6 @@ class PlayerCardState extends State<PlayerCard> {
               downloadModel.download([musicItem]);
             },
           ),
-          const SizedBox(width: 50),
           InkWell(
             child: isLike
               ? const Icon(Icons.favorite, size: 30, color: Colors.red)
@@ -232,6 +253,24 @@ class PlayerCardState extends State<PlayerCard> {
               }
             },
           ),
+          InkWell(
+            child: SvgPicture.string(
+              IconsSVG.bilibili,
+              color: primaryColor,
+              width: 24,
+              height: 24,
+            ),
+            onTap: () {
+              final current = Provider.of<PlayerModel>(context, listen: false).current;
+              final biliVIDs = current!.id.split("_").where((e) => e.startsWith("BV")).toList();
+
+              if (biliVIDs.isNotEmpty) {
+                _launchBilibiliVideo(biliVIDs[0], player);
+              } else {
+                BotToast.showText(text: "找不到视频");
+              }
+            },
+          )
         ],
       ),
     );
@@ -272,7 +311,7 @@ class PlayerCardState extends State<PlayerCard> {
           children: [
             Positioned.fill(
               child: ImageFiltered(
-                imageFilter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
+                imageFilter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
                 child: _imageInfo != null
                   ? Image(
                       image: _imageProvider!,
