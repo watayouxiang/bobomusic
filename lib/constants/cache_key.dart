@@ -22,4 +22,7 @@ class CacheKey {
 
   /// tabbar 位置
   static String currentTabIndex  = "current_tab_index";
+
+  /// 是否需要弹出确认拉起 bilibili 的弹窗
+  static String launchBilibiliConfirm  = "launch_bilibili_confirm";
 }

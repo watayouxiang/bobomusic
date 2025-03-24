@@ -8,13 +8,14 @@ import "package:bobomusic/db/db.dart";
 import "package:bobomusic/event_bus/event_bus.dart";
 import "package:bobomusic/modules/download/model.dart";
 import "package:bobomusic/modules/player/player_card/vinyl_record.dart";
+import "package:bobomusic/modules/player/utils.dart";
 import "package:bobomusic/origin_sdk/origin_types.dart";
 import "package:bot_toast/bot_toast.dart";
+import "package:flutter/cupertino.dart";
 import "package:flutter/material.dart";
 import "package:bobomusic/modules/player/player.dart";
 import "package:bobomusic/modules/player/model.dart";
 import "package:bobomusic/utils/clear_html_tags.dart";
-import "package:flutter_easyloading/flutter_easyloading.dart";
 import "package:flutter_svg/flutter_svg.dart";
 import "package:provider/provider.dart";
 import "package:url_launcher/url_launcher.dart";
@@ -176,20 +177,43 @@ class PlayerCardState extends State<PlayerCard> {
   }
 
   Future<void> _launchBilibiliVideo(String bvId, PlayerModel player) async {
-    final url = "bilibili://video/$bvId";
-    EasyLoading.show(maskType: EasyLoadingMaskType.black);
-
     try {
-      await launchUrl(Uri.parse(url));
+      final res = await getLaunchBilibiliConfirm();
+
+      if (res) {
+        showDialog(
+          // ignore: use_build_context_synchronously
+          context: context,
+          builder: (ctx) => Container(
+            alignment: Alignment.bottomCenter,
+            child: CupertinoActionSheet(
+              title: const Text("打开哔哩哔哩", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+              message: const Text("请授权始终打开，授权后需要重新操作", style: TextStyle(fontSize: 10)),
+              actions: [
+                CupertinoActionSheetAction(
+                  onPressed: () async {
+                    Navigator.of(context).pop();
+                    setLaunchBilibiliConfirm(confirm: false);
+                    final url = "bilibili://video/$bvId";
+                    await launchUrl(Uri.parse(url));
+                  },
+                  child: const Text("确认且不再提示", style: TextStyle(fontSize: 12, color: Colors.deepPurple))
+                ),
+              ],
+              cancelButton: CupertinoActionSheetAction(onPressed: () {
+                Navigator.of(context).pop();
+              }, child: Text("取消", style: TextStyle(fontSize: 12, color: Colors.grey[800]))),
+            ),
+          )
+        );
+      } else {
+        final url = "bilibili://video/$bvId";
+        await launchUrl(Uri.parse(url));
+      }
     } catch(error) {
       final webUrl = "https://www.bilibili.com/video/$bvId/?spm_id_from=333.1007.tianma.1-2-2.click";
       await launchUrl(Uri.parse(webUrl));
     }
-
-    Timer(const Duration(seconds: 1), () {
-      player.pause();
-      EasyLoading.dismiss();
-    });
   }
 
   Widget _buildActionButtons(Color primaryColor) {
