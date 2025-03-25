@@ -188,7 +188,10 @@ class PlayerCardState extends State<PlayerCard> {
             alignment: Alignment.bottomCenter,
             child: CupertinoActionSheet(
               title: const Text("打开哔哩哔哩", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-              message: const Text("请授权始终打开，授权后需要重新操作", style: TextStyle(fontSize: 10)),
+              message: Container(
+                margin: const EdgeInsets.only(top: 6),
+                child: const Text("请授权始终打开，授权后需要重新操作", style: TextStyle(fontSize: 10)),
+              ),
               actions: [
                 CupertinoActionSheetAction(
                   onPressed: () async {
@@ -222,9 +225,9 @@ class PlayerCardState extends State<PlayerCard> {
     final isLocal = musicItem.localPath.isNotEmpty;
 
     return Container(
-      padding: const EdgeInsets.only(right: 70, left: 70),
+      padding: const EdgeInsets.only(right: 45, left: 40),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           InkWell(
             child: Icon(Icons.download_outlined, color: primaryColor, size: 30),
@@ -281,8 +284,8 @@ class PlayerCardState extends State<PlayerCard> {
             child: SvgPicture.string(
               IconsSVG.bilibili,
               color: primaryColor,
-              width: 24,
-              height: 24,
+              width: 25,
+              height: 25,
             ),
             onTap: () {
               final current = Provider.of<PlayerModel>(context, listen: false).current;

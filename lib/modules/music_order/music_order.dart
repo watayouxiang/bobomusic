@@ -66,7 +66,10 @@ class UserMusicOrderView extends State<MusicOrderView> with AutomaticKeepAliveCl
           alignment: Alignment.bottomCenter,
           child: CupertinoActionSheet(
             title: const Text("请选择操作", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-            message: const Text("有时候重新扫描是必要的", style: TextStyle(fontSize: 10)),
+            message: Container(
+              margin: const EdgeInsets.only(top: 6),
+              child: const Text("有时候重新扫描是必要的", style: TextStyle(fontSize: 10)),
+            ),
             actions: [
               CupertinoActionSheetAction(
                 onPressed: () {
@@ -96,7 +99,7 @@ class UserMusicOrderView extends State<MusicOrderView> with AutomaticKeepAliveCl
     eventBus.on<RefreshTabList>().listen((event) {
       _loadData();
     });
-  
+
     _loadData();
   }
 
@@ -114,7 +117,7 @@ class UserMusicOrderView extends State<MusicOrderView> with AutomaticKeepAliveCl
 
   Future<void> _loadData() async {
     final orderList = await getCustomOrderList();
-  
+
     setState(() {
       customOrderList = orderList;
       tabList = [
@@ -293,7 +296,7 @@ class UserMusicOrderView extends State<MusicOrderView> with AutomaticKeepAliveCl
               } catch (error) {
                 print(error);
               }
-              EasyLoading.dismiss();                    
+              EasyLoading.dismiss();
             },
             onCancel: () {
               Navigator.of(context).pop();
