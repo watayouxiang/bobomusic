@@ -11,6 +11,7 @@ import "package:flutter/material.dart";
 import "package:bobomusic/modules/home/home.dart";
 import "package:bobomusic/modules/player/model.dart";
 import "package:bobomusic/modules/player/service.dart";
+import "package:flutter/services.dart";
 import "package:flutter_easyloading/flutter_easyloading.dart";
 import "package:just_audio_media_kit/just_audio_media_kit.dart";
 import "package:provider/provider.dart";
@@ -144,6 +145,9 @@ class MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    // 隐藏 Android 底部导航条
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+
     return MaterialApp(
       theme: _currentTheme,
       home: const HomeView(),
