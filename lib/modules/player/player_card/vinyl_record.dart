@@ -112,7 +112,6 @@ class VinylRecordWidgetState extends State<VinylRecordWidget>
     final containerSize = screenWidth * 0.9;
     final recordSize = containerSize * 0.9;
 
-
     return Stack(
       alignment: Alignment.center,
       children: [

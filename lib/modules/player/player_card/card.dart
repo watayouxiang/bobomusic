@@ -53,8 +53,7 @@ class PlayerCardState extends State<PlayerCard> {
   Future<void> _initState() async {
     try {
       final current = Provider.of<PlayerModel>(context, listen: false).current;
-      final List<Map<String, dynamic>> dbMusics = await db.queryByParam(
-          TableName.musicILike, current?.id ?? current!.name);
+      final List<Map<String, dynamic>> dbMusics = await db.queryByParam(TableName.musicILike, current?.id ?? current!.name);
 
       if (dbMusics.isNotEmpty) {
         setState(() {
