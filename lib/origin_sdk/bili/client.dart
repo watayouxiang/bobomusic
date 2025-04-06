@@ -2,7 +2,6 @@ import "dart:convert";
 
 import "package:bot_toast/bot_toast.dart";
 import "package:bobomusic/origin_sdk/bili/utils.dart";
-import "package:bobomusic/utils/logs.dart";
 import "package:dio/dio.dart";
 import "package:flutter_easyloading/flutter_easyloading.dart";
 import "package:shared_preferences/shared_preferences.dart";
@@ -92,7 +91,6 @@ class BiliClient implements OriginService {
     if (response.statusCode == 200) {
       return SignData.fromJson(response.data);
     } else {
-      logs.e("bili: 获取签名秘钥失败", error: {"body": response.data});
       throw response.data;
     }
   }
@@ -105,7 +103,6 @@ class BiliClient implements OriginService {
     if (response.statusCode == 200) {
       return SpiData.fromJson(response.data);
     } else {
-      logs.e("bili: 获取 spi 唯一标识失败", error: {"body": response.data});
       throw response.data;
     }
   }
@@ -133,10 +130,6 @@ class BiliClient implements OriginService {
     if (response.statusCode == 200) {
       return BiliSearchResponse.fromJson(response.data);
     } else {
-      logs.e(
-        "bili: 搜索失败",
-        error: {"body": response.data, "params": params},
-      );
       throw response.data;
     }
   }
@@ -159,10 +152,6 @@ class BiliClient implements OriginService {
       final data = response.data["data"];
       return BiliSearchItem.fromJson(data);
     } else {
-      logs.e(
-        "bili: 搜索条目详情获取失败",
-        error: {"body": response.data, "id": id},
-      );
       throw response.data;
     }
   }
@@ -187,10 +176,6 @@ class BiliClient implements OriginService {
       });
       return result;
     } else {
-      logs.e(
-        "bili: 搜索条目详情获取失败",
-        error: {"body": response.data, "keyword": keyword},
-      );
       throw response.data;
     }
   }
@@ -200,11 +185,6 @@ class BiliClient implements OriginService {
   Future<MusicUrl> getMusicUrl(String id) async {
     BiliId biliid = BiliId.unicode(id);
     if (biliid.cid == null || biliid.cid == "") {
-      // 歌曲 ID 不正确 缺少 CID
-      logs.e("bili: 歌曲 ID 不正确 缺少 CID", error: {
-        "id": id,
-        "biliid": biliid,
-      });
       throw Exception("歌曲 ID 不正确 缺少 CID");
     }
     await init();
@@ -230,10 +210,6 @@ class BiliClient implements OriginService {
         headers: {"Referer": _referer},
       );
     } else {
-      logs.e(
-        "bili: 获取音乐播放地址失败",
-        error: {"body": response.data, "id": id},
-      );
       throw response.data;
     }
   }
