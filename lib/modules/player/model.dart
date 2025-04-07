@@ -16,6 +16,14 @@ class PlayerModel extends ChangeNotifier {
   AudioPlayerHandler? _playerHandler;
   // 当前歌曲
   MusicItem? get current => _playerHandler?.current;
+  // 添加 setter 方法
+  set current(MusicItem? value) {
+    if (_playerHandler != null) {
+      _playerHandler!.current = value;
+      notifyListeners();
+    }
+  }
+
   // 歌曲是否加载
   bool get isLoading => _playerHandler?.player.isLoading ?? false;
   // 是否正在播放

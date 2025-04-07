@@ -212,10 +212,6 @@ class MusicLocalState extends State<MusicLocal> {
       SheetItem(
         title: const Text("编辑"),
         onPressed: () {
-          if (player.current?.playId != null && player.current!.playId.isNotEmpty && player.current!.playId == musicItem.playId) {
-            BotToast.showText(text: "当前歌曲正在播放，不支持编辑");
-            return;
-          }
           Navigator.of(context).push(
             ModalBottomSheetRoute(
               isScrollControlled: true,
@@ -228,6 +224,7 @@ class MusicLocalState extends State<MusicLocal> {
                     musicItem: musicItem,
                     onOk: (music) async {
                       await db.update(TableName.musicLocal, musicItem2Row(music: music));
+                      player.current = music;
                       _loadData();
                     },
                   )

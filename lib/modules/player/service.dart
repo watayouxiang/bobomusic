@@ -12,6 +12,13 @@ class AudioPlayerHandler extends BaseAudioHandler {
   double get _speed => player.audio.speed;
   MusicItem? get current => player.current;
 
+  // 添加 setter 方法
+  set current(MusicItem? value) {
+    player.current = value;
+    _updateMediaItem();
+    _broadcastState();
+  }
+
   AudioPlayerHandler() {
     Timer? timer;
     player.audio.playbackEventStream.listen((event) {
@@ -34,6 +41,7 @@ class AudioPlayerHandler extends BaseAudioHandler {
       }
     });
   }
+
   @override
   Future<void> play({MusicItem? music}) async {
     _playing = true;
