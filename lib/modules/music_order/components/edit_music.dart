@@ -24,6 +24,7 @@ class EditMusic extends StatefulWidget {
 class EditMusicState extends State<EditMusic> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _authorController = TextEditingController();
+  final TextEditingController _durationController = TextEditingController();
 
   @override
   void initState() {
@@ -31,13 +32,14 @@ class EditMusicState extends State<EditMusic> {
     setState(() {
       _nameController.text = widget.musicItem.name;
       _authorController.text = widget.musicItem.author;
+      _durationController.text = "${widget.musicItem.duration}";
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 350,
+      height: 450,
       padding: const EdgeInsets.all(15),
       child: Column(
         children: [
@@ -64,7 +66,7 @@ class EditMusicState extends State<EditMusic> {
               focusedBorder: OutlineInputBorder(
                 borderSide: BorderSide(color: Colors.grey, width: 2.0),
               ),
-              label: Text("歌单名称 (必填，限 100 字符)", style: TextStyle(color: Colors.grey)),
+              label: Text("歌曲名称 (必填)", style: TextStyle(color: Colors.grey)),
             ),
             inputFormatters: [
               FilteringTextInputFormatter.allow(RegExp(r"[\w\u4e00-\u9fa5\-\s]")),
@@ -84,10 +86,30 @@ class EditMusicState extends State<EditMusic> {
               focusedBorder: OutlineInputBorder(
                 borderSide: BorderSide(color: Colors.grey, width: 2.0),
               ),
-              label: Text("作者名称 (必填，限 100 字符)", style: TextStyle(color: Colors.grey)),
+              label: Text("歌手名称 (必填)", style: TextStyle(color: Colors.grey)),
             ),
             inputFormatters: [
               FilteringTextInputFormatter.allow(RegExp(r"[\w\u4e00-\u9fa5\-\s]")),
+            ],
+          ),
+          const SizedBox(height: 20),
+          TextField(
+            controller: _durationController,
+            maxLength: 100,
+            cursorColor: Colors.grey,
+            decoration: const InputDecoration(
+              // 正常状态下的边框样式和颜色
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey, width: 2.0),
+              ),
+              // 获得焦点时的边框样式和颜色
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey, width: 2.0),
+              ),
+              label: Text("歌曲时长 (输入秒数)", style: TextStyle(color: Colors.grey)),
+            ),
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp(r"\d+")),
             ],
           ),
           const SizedBox(height: 20),
@@ -100,8 +122,9 @@ class EditMusicState extends State<EditMusic> {
                   final music = widget.musicItem.copyWith(
                     name: _nameController.text,
                     author: _authorController.text,
+                    duration: int.parse(_durationController.text),
                   );
-  
+
                   await widget.onOk(music);
 
                   Timer(const Duration(seconds: 1), () {

@@ -1,6 +1,5 @@
 import "dart:async";
 
-import "package:bobomusic/components/infinite_rotate/comp.dart";
 import "package:bobomusic/modules/player/const.dart";
 import "package:bot_toast/bot_toast.dart";
 import "package:flutter/material.dart";
