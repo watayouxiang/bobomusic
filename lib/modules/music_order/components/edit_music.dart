@@ -72,7 +72,7 @@ class EditMusicState extends State<EditMusic> {
               FilteringTextInputFormatter.allow(RegExp(r"[\w\u4e00-\u9fa5\-\s]")),
             ],
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 10),
           TextField(
             controller: _authorController,
             maxLength: 100,
@@ -92,7 +92,7 @@ class EditMusicState extends State<EditMusic> {
               FilteringTextInputFormatter.allow(RegExp(r"[\w\u4e00-\u9fa5\-\s]")),
             ],
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 10),
           TextField(
             controller: _durationController,
             maxLength: 100,
@@ -112,6 +112,10 @@ class EditMusicState extends State<EditMusic> {
               FilteringTextInputFormatter.allow(RegExp(r"\d+")),
             ],
           ),
+          const Align(
+            alignment: Alignment.centerLeft,
+            child: Text(" 备注：有些下载的音乐没有时长信息，这里可以修正，不改变歌曲真正的时长", style: TextStyle(fontSize: 10, color: Colors.grey)),
+          ),
           const SizedBox(height: 20),
           SizedBox(
             width: double.infinity,
@@ -122,7 +126,7 @@ class EditMusicState extends State<EditMusic> {
                   final music = widget.musicItem.copyWith(
                     name: _nameController.text,
                     author: _authorController.text,
-                    duration: int.parse(_durationController.text),
+                    duration: _durationController.text.isEmpty ? 0 : int.parse(_durationController.text),
                   );
 
                   await widget.onOk(music);
