@@ -68,9 +68,6 @@ class EditMusicState extends State<EditMusic> {
               ),
               label: Text("歌曲名称 (必填)", style: TextStyle(color: Colors.grey)),
             ),
-            inputFormatters: [
-              FilteringTextInputFormatter.allow(RegExp(r"[\w\u4e00-\u9fa5\-\s]")),
-            ],
           ),
           const SizedBox(height: 10),
           TextField(
@@ -88,9 +85,6 @@ class EditMusicState extends State<EditMusic> {
               ),
               label: Text("歌手名称 (必填)", style: TextStyle(color: Colors.grey)),
             ),
-            inputFormatters: [
-              FilteringTextInputFormatter.allow(RegExp(r"[\w\u4e00-\u9fa5\-\s]")),
-            ],
           ),
           const SizedBox(height: 10),
           TextField(
@@ -114,7 +108,7 @@ class EditMusicState extends State<EditMusic> {
           ),
           const Align(
             alignment: Alignment.centerLeft,
-            child: Text(" 备注：有些下载的音乐没有时长信息，这里可以修正，不改变歌曲真正的时长", style: TextStyle(fontSize: 10, color: Colors.grey)),
+            child: Text(" 备注：更正音乐时长信息，不改变歌曲真正的时长", style: TextStyle(fontSize: 10, color: Colors.grey)),
           ),
           const SizedBox(height: 20),
           SizedBox(
