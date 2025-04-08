@@ -146,6 +146,11 @@ class MusicListCommonState extends State<MusicListCommon> {
                     musicItem: musicItem,
                     onOk: (music) async {
                       await db.update(widget.tabName, musicItem2Row(music: music));
+
+                      if (player.current != null && player.current!.playId == music.playId) {
+                        player.current = music;
+                      }
+
                       _loadData();
                     },
                   )

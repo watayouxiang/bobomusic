@@ -224,7 +224,11 @@ class MusicLocalState extends State<MusicLocal> {
                     musicItem: musicItem,
                     onOk: (music) async {
                       await db.update(TableName.musicLocal, musicItem2Row(music: music));
-                      player.current = music;
+
+                      if (player.current != null && player.current!.playId == music.playId) {
+                        player.current = music;
+                      }
+
                       _loadData();
                     },
                   )

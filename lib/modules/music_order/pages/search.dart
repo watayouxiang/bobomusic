@@ -3,6 +3,8 @@ import "dart:async";
 import "package:bobomusic/components/music_list_tile/music_list_tile.dart";
 import "package:bobomusic/components/sheet/bottom_sheet.dart";
 import "package:bobomusic/constants/cache_key.dart";
+import "package:bobomusic/db/db.dart";
+import "package:bobomusic/modules/music_order/components/edit_music.dart";
 import "package:bobomusic/modules/music_order/utils.dart";
 import "package:flutter/material.dart";
 import "package:bobomusic/modules/player/player.dart";
@@ -11,6 +13,8 @@ import "package:bobomusic/origin_sdk/origin_types.dart";
 import "package:bobomusic/origin_sdk/service.dart";
 import "package:provider/provider.dart";
 import "package:shared_preferences/shared_preferences.dart";
+
+final db = DBOrder();
 
 class SearchOrderMusicView extends StatefulWidget {
   const SearchOrderMusicView({super.key});
@@ -38,7 +42,7 @@ class SearchOrderMusicViewState extends State<SearchOrderMusicView> {
       });
       return;
     }
-  
+
     setState(() {
       _loading = true;
     });
@@ -212,6 +216,35 @@ class SearchOrderMusicViewState extends State<SearchOrderMusicView> {
           player.addPlayerList([data], showToast: true);
         },
       ),
+      SheetItem(
+        title: const Text("编辑"),
+        onPressed: () {
+          Navigator.of(context).push(
+            ModalBottomSheetRoute(
+              isScrollControlled: true,
+              builder: (context) {
+                return Padding(
+                  padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(context).viewInsets.bottom,
+                  ),
+                  child: EditMusic(
+                    musicItem: data,
+                    onOk: (music) async {
+                      await db.update(TableName.musicLocal, musicItem2Row(music: music));
+
+                      if (player.current != null && player.current!.playId == music.playId) {
+                        player.current = music;
+                      }
+
+                      _searchHandler(true);
+                    },
+                  )
+                );
+              },
+            )
+          );
+        },
+      ),
     ]);
   }
 
@@ -326,7 +359,7 @@ class _SearchFormState extends State<_SearchForm> {
           widget.onSearch();
           return;
         }
-  
+
         widget.onInput(value);
       },
     );
