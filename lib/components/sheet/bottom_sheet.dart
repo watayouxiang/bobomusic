@@ -16,9 +16,7 @@ class SheetItem {
 
 void openBottomSheet(BuildContext context, List<SheetItem> items) {
   const double itemHeight = 55;
-  final double height =
-      (itemHeight * items.where((e) => e.hidden != true).length).toDouble() +
-          30;
+  final double height = (itemHeight * items.where((e) => e.hidden != true).length).toDouble() + 30;
 
   final screenHeight = MediaQuery.of(context).size.height;
 
@@ -41,11 +39,11 @@ void openBottomSheet(BuildContext context, List<SheetItem> items) {
                   leading: e.icon,
                   title: e.title,
                   onTap: e.onPressed != null
-                      ? () {
-                          Navigator.of(context).pop();
-                          e.onPressed!();
-                        }
-                      : null,
+                    ? () {
+                        Navigator.of(context).pop();
+                        e.onPressed!();
+                      }
+                    : null,
                 );
               }),
             ],

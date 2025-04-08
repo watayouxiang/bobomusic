@@ -48,6 +48,7 @@ class EditMusicOrderState extends State<EditMusicOrder> {
       padding: const EdgeInsets.all(15),
       child: Column(
         children: [
+          const SizedBox(height: 8),
           Row(
             children: [
               Expanded(
@@ -55,8 +56,12 @@ class EditMusicOrderState extends State<EditMusicOrder> {
                   alignment: Alignment.centerLeft,
                   child: Text(
                     _isCreate ? "创建歌单" : "修改歌单",
-                    maxLines: 1,
-                    style: const TextStyle(fontSize: 18),
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Theme.of(context).primaryColor,
+                      fontWeight: FontWeight.bold,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                 ),
               ),
@@ -119,7 +124,7 @@ class EditMusicOrderState extends State<EditMusicOrder> {
               FilteringTextInputFormatter.allow(RegExp(r"[\w\u4e00-\u9fa5]")),
             ],
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 10),
           SizedBox(
             width: double.infinity,
             child: FilledButton(

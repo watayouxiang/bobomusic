@@ -43,12 +43,17 @@ class EditMusicState extends State<EditMusic> {
       padding: const EdgeInsets.all(15),
       child: Column(
         children: [
-          const Align(
+          const SizedBox(height: 8),
+          Align(
             alignment: Alignment.centerLeft,
             child: Text(
               "修改歌曲信息",
-              maxLines: 1,
-              style: TextStyle(fontSize: 18),
+              style: TextStyle(
+                fontSize: 16,
+                color: Theme.of(context).primaryColor,
+                fontWeight: FontWeight.bold,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ),
           const SizedBox(height: 30),
@@ -110,7 +115,7 @@ class EditMusicState extends State<EditMusic> {
             alignment: Alignment.centerLeft,
             child: Text(" 备注：更正音乐时长信息，不改变歌曲真正的时长", style: TextStyle(fontSize: 10, color: Colors.grey)),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 10),
           SizedBox(
             width: double.infinity,
             child: FilledButton(

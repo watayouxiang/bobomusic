@@ -30,7 +30,7 @@ class _DeleteOrdersState extends State<DeleteOrders> {
 
     setState(() {
       customOrderList = list;
-      height = 55 * customOrderList.length + 150;
+      height = 55 * customOrderList.length + 140;
     });
   }
 
@@ -40,18 +40,20 @@ class _DeleteOrdersState extends State<DeleteOrders> {
     return SafeArea(
       bottom: true,
       child: Container(
-        padding: const EdgeInsets.only(top: 8, bottom: 16),
+        padding: const EdgeInsets.only(top: 15, bottom: 16),
         height: height <= screenHeight - 80 ? height : screenHeight - 80,
         child: Column(
           children: [
             Container(
-              padding: const EdgeInsets.only(left: 16, top: 10, bottom: 10),
-              child: const Align(
+              padding: const EdgeInsets.only(left: 16, top: 8, bottom: 10),
+              child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
                   "删除歌单",
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 16,
+                    color: Theme.of(context).primaryColor,
+                    fontWeight: FontWeight.bold,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
@@ -81,7 +83,7 @@ class _DeleteOrdersState extends State<DeleteOrders> {
               ),
             ),
             Container(
-              padding: const EdgeInsets.only(top: 16),
+              padding: const EdgeInsets.only(top: 2),
               width: MediaQuery.of(context).size.width - 32,
               child: FilledButton(
                 onPressed: () async {
@@ -105,7 +107,7 @@ class _DeleteOrdersState extends State<DeleteOrders> {
                     if (widget.onConfirm != null) {
                       widget.onConfirm!();
                     }
-         
+
                     if (context.mounted) {
                       Navigator.of(context).pop();
                     }

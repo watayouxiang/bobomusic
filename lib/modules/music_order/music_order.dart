@@ -222,7 +222,20 @@ class UserMusicOrderView extends State<MusicOrderView> with AutomaticKeepAliveCl
               }
               if (e == Menus.editOrder) {
                 if (orderSheetList.isNotEmpty) {
-                  openBottomSheet(context, orderSheetList);
+                  openBottomSheet(context, [
+                    SheetItem(
+                      title: Text(
+                        "可编辑歌单",
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Theme.of(context).primaryColor,
+                          fontWeight: FontWeight.bold,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ),
+                    ...orderSheetList,
+                  ]);
                 } else {
                   BotToast.showText(text: "没有可编辑的歌单", duration: const Duration(seconds: 2));
                 }
