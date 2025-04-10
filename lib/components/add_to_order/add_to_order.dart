@@ -49,7 +49,7 @@ class _AddToOrderState extends State<AddToOrder> {
 
     setState(() {
       orderList = wholeList;
-      height = 55 * orderList.length + 150;
+      height = 55 * orderList.length + 140;
       selectedKeys = selectedKeys;
     });
   }
@@ -111,7 +111,7 @@ class _AddToOrderState extends State<AddToOrder> {
                           playId: uuid.v4(),
                           orderName: order,
                         );
-                        
+
                         final row = musicItem2Row(music: newItem);
 
                         await db.insert(order, row);
@@ -148,7 +148,7 @@ class _AddToOrderState extends State<AddToOrder> {
       padding: const EdgeInsets.only(
         left: 15,
         right: 15,
-        top: 5,
+        top: 16,
         bottom: 5,
       ),
       child: Row(
@@ -159,7 +159,8 @@ class _AddToOrderState extends State<AddToOrder> {
                 Text(
                   "添加歌曲到歌单",
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold
                   ),
                 ),
               ],
