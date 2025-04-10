@@ -2,6 +2,7 @@ import "package:flutter/material.dart";
 
 class SettingItem {
   final IconData? leadingIcon;
+  final Widget? customLeadingIcon;
   final String? title;
   final Widget? customTitle;
   final VoidCallback? onTap;
@@ -12,7 +13,8 @@ class SettingItem {
     this.title,
     this.onTap,
     this.trailing,
-    this.customTitle
+    this.customTitle,
+    this.customLeadingIcon,
   });
 }
 
@@ -46,6 +48,7 @@ class SettingCardState extends State<SettingCard> {
             final item = widget.settingItems[index];
             return _buildItem(
               leadingIcon: item.leadingIcon,
+              customLeadingIcon: item.customLeadingIcon,
               title: item.title,
               customTitle: item.customTitle,
               onTap: item.onTap,
@@ -63,6 +66,7 @@ class SettingCardState extends State<SettingCard> {
     VoidCallback? onTap,
     Widget? trailing,
     Widget? customTitle,
+    Widget? customLeadingIcon,
   }) {
     return ListTile(
       leading: leadingIcon != null
@@ -70,12 +74,12 @@ class SettingCardState extends State<SettingCard> {
             leadingIcon,
             color: Theme.of(context).primaryColor,
           )
-        : null,
+        : customLeadingIcon,
       title: customTitle ?? Text(
         title ?? "",
         style: TextStyle(
           fontSize: 16,
-          color: leadingIcon == null ? Colors.black : Colors.grey[700],
+          color: Colors.grey[700],
         ),
       ),
       trailing: trailing,

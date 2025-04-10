@@ -245,7 +245,7 @@ class PlayerCardState extends State<PlayerCard> {
           ),
           InkWell(
             child: isLike
-              ? const Icon(Icons.favorite, size: 30, color: Colors.red)
+              ? const Icon(Icons.favorite, size: 30, color: Colors.redAccent)
               : Icon(Icons.favorite_border_rounded, color: primaryColor, size: 30),
             onTap: () async {
               try {
@@ -284,6 +284,7 @@ class PlayerCardState extends State<PlayerCard> {
           InkWell(
             child: SvgPicture.string(
               IconsSVG.bilibili,
+              // ignore: deprecated_member_use
               color: primaryColor,
               width: 25,
               height: 25,

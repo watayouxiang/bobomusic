@@ -1,6 +1,7 @@
 import "package:bobomusic/constants/cache_key.dart";
 import "package:bobomusic/db/db.dart";
 import "package:bobomusic/event_bus/event_bus.dart";
+import "package:bobomusic/icons/icons_svg.dart";
 import "package:bobomusic/modules/setting/components/setting_card.dart";
 import "package:bobomusic/modules/setting/pages/help_doc.dart";
 import "package:bobomusic/modules/setting/pages/limit.dart";
@@ -10,6 +11,7 @@ import "package:bobomusic/modules/setting/pages/theme_color_setting.dart";
 import "package:bobomusic/utils/get_cache_color.dart";
 import "package:bobomusic/utils/update_version.dart";
 import "package:flutter/material.dart";
+import "package:flutter_svg/svg.dart";
 import "package:shared_preferences/shared_preferences.dart";
 
 final db = DBOrder();
@@ -28,6 +30,7 @@ class SettingViewState extends State<SettingView> with AutomaticKeepAliveClientM
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final primaryColor = Theme.of(context).primaryColor;
 
     return Scaffold(
       body: SafeArea(
@@ -48,7 +51,7 @@ class SettingViewState extends State<SettingView> with AutomaticKeepAliveClientM
                           backgroundImage: AssetImage("assets/ic_launch.png"),
                         ),
                         const SizedBox(width: 12),
-                        Text("啵啵音乐", style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold, fontSize: 16)),
+                        Text("啵啵音乐", style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold, fontSize: 16)),
                         const SizedBox(width: 12),
                         const Text("听歌自由", style: TextStyle(color: Colors.grey, fontSize: 12)),
                       ],
@@ -62,7 +65,7 @@ class SettingViewState extends State<SettingView> with AutomaticKeepAliveClientM
                   SettingItem(
                     leadingIcon: Icons.color_lens,
                     title: "更换主题色",
-                    trailing: Icon(Icons.chevron_right, color: Theme.of(context).primaryColor),
+                    trailing: Icon(Icons.chevron_right, color: primaryColor),
                     onTap: () async {
                       Color initialColor = await getCacheColor();
 
@@ -94,7 +97,7 @@ class SettingViewState extends State<SettingView> with AutomaticKeepAliveClientM
                   SettingItem(
                     leadingIcon: Icons.info,
                     title: "使用帮助",
-                    trailing: Icon(Icons.chevron_right, color: Theme.of(context).primaryColor),
+                    trailing: Icon(Icons.chevron_right, color: primaryColor),
                     onTap: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
@@ -108,7 +111,7 @@ class SettingViewState extends State<SettingView> with AutomaticKeepAliveClientM
                   SettingItem(
                     leadingIcon: Icons.warning_rounded,
                     title: "声明与限制",
-                    trailing: Icon(Icons.chevron_right, color: Theme.of(context).primaryColor),
+                    trailing: Icon(Icons.chevron_right, color: primaryColor),
                     onTap: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
@@ -125,9 +128,18 @@ class SettingViewState extends State<SettingView> with AutomaticKeepAliveClientM
               SettingCard(
                 settingItems: [
                   SettingItem(
-                    leadingIcon: Icons.update,
+                    customLeadingIcon: Container(
+                      padding: const EdgeInsets.only(left: 2),
+                      child: SvgPicture.string(
+                        IconsSVG.update,
+                        // ignore: deprecated_member_use
+                        color: primaryColor,
+                        width: 21,
+                        height: 21,
+                      ),
+                    ),
                     title: "检查更新",
-                    trailing: Icon(Icons.chevron_right, color: Theme.of(context).primaryColor),
+                    trailing: Icon(Icons.chevron_right, color: primaryColor),
                     onTap: () {
                       updateAppVersion(context);
                     }
@@ -135,7 +147,7 @@ class SettingViewState extends State<SettingView> with AutomaticKeepAliveClientM
                   SettingItem(
                     leadingIcon: Icons.coffee,
                     title: "支持开发",
-                    trailing: Icon(Icons.chevron_right, color: Theme.of(context).primaryColor),
+                    trailing: Icon(Icons.chevron_right, color: primaryColor),
                     onTap: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
@@ -147,9 +159,18 @@ class SettingViewState extends State<SettingView> with AutomaticKeepAliveClientM
                     }
                   ),
                   SettingItem(
-                    leadingIcon: Icons.handshake,
+                    customLeadingIcon: Container(
+                      margin: const EdgeInsets.only(left: 3),
+                      child: SvgPicture.string(
+                        IconsSVG.thanks,
+                        // ignore: deprecated_member_use
+                        color: primaryColor,
+                        width: 17,
+                        height: 17,
+                      ),
+                    ),
                     title: "鸣谢",
-                    trailing: Icon(Icons.chevron_right, color: Theme.of(context).primaryColor),
+                    trailing: Icon(Icons.chevron_right, color: primaryColor),
                     onTap: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
