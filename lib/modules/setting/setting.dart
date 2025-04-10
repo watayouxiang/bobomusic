@@ -8,6 +8,7 @@ import "package:bobomusic/modules/setting/pages/support_me.dart";
 import "package:bobomusic/modules/setting/pages/thanks.dart";
 import "package:bobomusic/modules/setting/pages/theme_color_setting.dart";
 import "package:bobomusic/utils/get_cache_color.dart";
+import "package:bobomusic/utils/update_version.dart";
 import "package:flutter/material.dart";
 import "package:shared_preferences/shared_preferences.dart";
 
@@ -39,7 +40,25 @@ class SettingViewState extends State<SettingView> with AutomaticKeepAliveClientM
             children: [
               SettingCard(
                 settingItems: [
-                  SettingItem(title: "个性化"),
+                  SettingItem(
+                    customTitle: Row(
+                      children: [
+                        const CircleAvatar(
+                          radius: 12,
+                          backgroundImage: AssetImage("assets/ic_launch.png"),
+                        ),
+                        const SizedBox(width: 12),
+                        Text("啵啵音乐", style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold, fontSize: 16)),
+                        const SizedBox(width: 12),
+                        const Text("听歌自由", style: TextStyle(color: Colors.grey, fontSize: 12)),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+              const SizedBox(height: 16),
+              SettingCard(
+                settingItems: [
                   SettingItem(
                     leadingIcon: Icons.color_lens,
                     title: "更换主题色",
@@ -69,10 +88,9 @@ class SettingViewState extends State<SettingView> with AutomaticKeepAliveClientM
                   )
                 ],
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 16),
               SettingCard(
                 settingItems: [
-                  SettingItem(title: "帮助与支持"),
                   SettingItem(
                     leadingIcon: Icons.info,
                     title: "使用帮助",
@@ -103,10 +121,17 @@ class SettingViewState extends State<SettingView> with AutomaticKeepAliveClientM
                   )
                 ],
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 16),
               SettingCard(
                 settingItems: [
-                  SettingItem(title: "关于"),
+                  SettingItem(
+                    leadingIcon: Icons.update,
+                    title: "检查更新",
+                    trailing: Icon(Icons.chevron_right, color: Theme.of(context).primaryColor),
+                    onTap: () {
+                      updateAppVersion(context);
+                    }
+                  ),
                   SettingItem(
                     leadingIcon: Icons.coffee,
                     title: "支持开发",

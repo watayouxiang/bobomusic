@@ -1,81 +1,169 @@
+import "package:bobomusic/components/custom_dialog/custom_dialog.dart";
 import "package:bot_toast/bot_toast.dart";
 import "package:dio/dio.dart";
+import "package:flutter/gestures.dart";
 import "package:flutter/material.dart";
+import "package:flutter_easyloading/flutter_easyloading.dart";
 import "package:package_info_plus/package_info_plus.dart";
 import "package:url_launcher/url_launcher.dart";
 
 // 检查更新版本
-updateAppVersion() async {
-  final dio = Dio();
+updateAppVersion(BuildContext context) async {
   try {
-    final resp = await dio.get(
-      "https://api.github.com/repos/bb-music/flutter-app/releases/latest",
-      options: Options(headers: {
-        "Accept": "application/vnd.github+json",
-        "X-GitHub-Api-Version": "2022-11-28"
-      }),
+    final checker = ReleaseChecker(
+      owner: "Redstone-1",
+      repo: "bobomusic",
     );
-    String latestVersion = resp.data["tag_name"];
-    latestVersion = latestVersion.replaceFirst("v", "");
-    PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    String currentVersion = packageInfo.version;
-    // 版本号对比
-    if (isUpdateVersion(latestVersion, currentVersion)) {
-      BotToast.showCustomLoading(
-        toastBuilder: (cancelFunc) {
-          return AlertDialog(
-            title: const Text("发现新版本，是否更新？"),
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  cancelFunc();
-                },
-                child: const Text("取消"),
-              ),
-              TextButton(
-                onPressed: () {
-                  cancelFunc();
-                  // 打开网址
-                  launchUrl(
-                    Uri.parse(
-                      "https://github.com/bb-music/flutter-app/releases/latest",
+
+    EasyLoading.show(maskType: EasyLoadingMaskType.black);
+
+    final isUpdateAvailable = await checker.isUpdateAvailable();
+
+    EasyLoading.dismiss();
+
+    if (!isUpdateAvailable) {
+      BotToast.showText(text: "已经是最新版本");
+      return;
+    }
+
+    if (isUpdateAvailable) {
+      if (context.mounted) {
+         showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return CustomDialog(
+              title: "提示",
+              body: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  RichText(
+                    text: TextSpan(
+                      text: "检查到新版本 ",
+                      style: const TextStyle(color: Colors.black, fontSize: 12),
+                      children: [
+                        TextSpan(
+                          text: "${checker.latestVersion}",
+                          style: const TextStyle(
+                            color: Colors.blue,
+                            fontSize: 12
+                          ),
+                        ),
+                        const TextSpan(
+                          text: "，是否立即更新？",
+                          style: TextStyle(color: Colors.black, fontSize: 12),
+                        ),
+                      ],
                     ),
-                  );
-                },
-                child: const Text("确定"),
-              )
-            ],
-          );
-        },
-      );
+                  ),
+                  const SizedBox(height: 10),
+                  const Text("备注：请下载 app-release.apk", style: TextStyle(fontSize: 12)),
+                  const SizedBox(height: 10),
+                  RichText(
+                    text: TextSpan(
+                      text: "无法访问？请点击这里下载：",
+                      style: const TextStyle(color: Colors.grey, fontSize: 12),
+                      children: [
+                        TextSpan(
+                          text: "啵啵音乐",
+                          style: const TextStyle(
+                            color: Colors.blue,
+                            decoration: TextDecoration.underline,
+                          ),
+                          recognizer: () {
+                            final gesture = TapGestureRecognizer()
+                              ..onTap = () {
+                                // 处理点击事件
+                                launchUrl(
+                                  Uri.parse(
+                                    "https://pan.baidu.com/s/1S0mF6PhN4aXM4VVFPc7PAQ",
+                                  ),
+                                );
+                              };
+                            return gesture;
+                          }(),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              onConfirm: () async {
+                launchUrl(
+                  Uri.parse(
+                    "https://github.com/Redstone-1/bobomusic/releases/latest",
+                  ),
+                );
+              },
+              onCancel: () {
+                Navigator.of(context).pop();
+              },
+            );
+          },
+        );
+      }
     }
   } catch (e) {
-    if (e is DioException) {
-      print(e.message);
-    }
+    BotToast.showText(text: "更新出错了 QAQ，不好意思 ~");
   }
 }
 
-bool isUpdateVersion(String newVersion, String old) {
-  if (newVersion.isEmpty || old.isEmpty) {
-    return false;
-  }
-  int newVersionInt, oldVersion;
-  var newList = newVersion.split(".");
-  var oldList = old.split(".");
-  if (newList.isEmpty || oldList.isEmpty) {
-    return false;
-  }
-  for (int i = 0; i < newList.length; i++) {
-    newVersionInt = int.parse(newList[i]);
-    oldVersion = int.parse(oldList[i]);
-    if (newVersionInt > oldVersion) {
-      return true;
-    } else if (newVersionInt < oldVersion) {
-      return false;
+class ReleaseChecker {
+  final String owner;
+  final String repo;
+  String? _latestVersion;
+  String? get latestVersion => _latestVersion;
+
+  ReleaseChecker({
+    required this.owner,
+    required this.repo,
+  });
+
+  Future<String?> getLatestReleaseVersion() async {
+    try {
+      final dio = Dio();
+
+      final response = await dio.get(
+        "https://api.github.com/repos/$owner/$repo/releases/latest",
+      );
+
+      if (response.statusCode == 200) {
+        final data = response.data;
+        _latestVersion = data["tag_name"];
+        return _latestVersion;
+      } else {
+        BotToast.showText(text: "网络请求错误，检查网络连接或稍后再试");
+      }
+    } catch (e) {
+      BotToast.showText(text: "网络请求错误，检查网络连接或稍后再试");
     }
+    return null;
   }
-  return false;
+
+  Future<bool> isUpdateAvailable() async {
+    final latestVersion = await getLatestReleaseVersion();
+    if (latestVersion == null) return false;
+
+    final packageInfo = await PackageInfo.fromPlatform();
+    final currentVersion = packageInfo.version;
+
+    return _compareVersions(latestVersion, currentVersion);
+  }
+
+  bool _compareVersions(String latest, String current) {
+    final latestParts = latest.replaceAll("v", "").split(".");
+    final currentParts = current.split(".");
+
+    for (int i = 0; i < 3; i++) {
+      final latestPart = int.tryParse(latestParts[i]) ?? 0;
+      final currentPart = int.tryParse(currentParts[i]) ?? 0;
+
+      if (latestPart > currentPart) {
+        return true;
+      } else if (latestPart < currentPart) {
+        return false;
+      }
+    }
+
+    return false;
+  }
 }
