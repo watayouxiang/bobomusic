@@ -27,7 +27,7 @@ class PlayerView extends StatelessWidget {
         margin: EdgeInsets.only(bottom: cancelMargin ? 0 : 34),
         padding: const EdgeInsets.only(left: 15, right: 10),
         decoration: BoxDecoration(
-          borderRadius: const BorderRadius.only(topLeft: Radius.circular(4), topRight: Radius.circular(4)),
+          borderRadius: cancelMargin ? const BorderRadius.all(Radius.circular(4)) : const BorderRadius.only(topLeft: Radius.circular(4), topRight: Radius.circular(4)),
           color: ColorPallette.colorMix(context, 0.1),
         ),
         child: const Flex(
