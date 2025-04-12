@@ -11,6 +11,7 @@ import "package:bobomusic/modules/player/player_card/vinyl_record.dart";
 import "package:bobomusic/modules/player/utils.dart";
 import "package:bobomusic/origin_sdk/origin_types.dart";
 import "package:bobomusic/utils/check_music_local_repeat.dart";
+import "package:bobomusic/utils/color.dart";
 import "package:bot_toast/bot_toast.dart";
 import "package:flutter/cupertino.dart";
 import "package:flutter/material.dart";
@@ -376,7 +377,7 @@ class PlayerCardState extends State<PlayerCard> {
                                     const SizedBox(height: 30),
                                     _buildActionButtons(primaryColor),
                                     const SizedBox(height: 20),
-                                    const PlayerProgress(),
+                                    PlayerProgress(color: primaryColor),
                                     const SizedBox(height: 30),
                                     _buildControlButtons(primaryColor),
                                   ],
@@ -393,7 +394,7 @@ class PlayerCardState extends State<PlayerCard> {
                               const SizedBox(height: 30),
                               _buildActionButtons(primaryColor),
                               const SizedBox(height: 20),
-                              const PlayerProgress(),
+                              PlayerProgress(color: primaryColor),
                               const SizedBox(height: 30),
                               _buildControlButtons(primaryColor),
                             ],
@@ -411,8 +412,11 @@ class PlayerCardState extends State<PlayerCard> {
 }
 
 class PlayerProgress extends StatefulWidget {
-  const PlayerProgress({
+  Color? color;
+
+  PlayerProgress({
     super.key,
+    this.color,
   });
 
   @override
@@ -457,7 +461,7 @@ class _PlayerProgressState extends State<PlayerProgress> {
 
   @override
   Widget build(BuildContext context) {
-    final Color primaryColor = Theme.of(context).primaryColor;
+    final Color primaryColor = widget.color ?? Theme.of(context).primaryColor;
 
     return Consumer<PlayerModel>(builder: (context, player, child) {
       int total = (player.duration?.inSeconds ?? 0);
@@ -466,8 +470,8 @@ class _PlayerProgressState extends State<PlayerProgress> {
         children: [
           SliderTheme(
             data: SliderTheme.of(context).copyWith(
-              trackShape: CustomTrackShape(context),
-              thumbShape: CustomThumbShape(context),
+              trackShape: CustomTrackShape(context, primaryColor),
+              thumbShape: CustomThumbShape(context, primaryColor),
             ),
             child: Slider(
               value: _value,
@@ -515,8 +519,9 @@ class _PlayerProgressState extends State<PlayerProgress> {
 
 class CustomThumbShape extends SliderComponentShape {
   final BuildContext context;
+  Color? color;
 
-  CustomThumbShape(this.context);
+  CustomThumbShape(this.context, this.color);
 
   @override
   Size getPreferredSize(bool isEnabled, bool isDiscrete) {
@@ -538,7 +543,7 @@ class CustomThumbShape extends SliderComponentShape {
     required double textScaleFactor,
     required Size sizeWithOverflow,
   }) {
-    final primaryColor = Theme.of(this.context).primaryColor;
+    final primaryColor = color ?? Theme.of(this.context).primaryColor;
     final canvas = context.canvas;
     final paint = Paint()..color = primaryColor;
     canvas.drawCircle(center, 4, paint);
@@ -547,8 +552,9 @@ class CustomThumbShape extends SliderComponentShape {
 
 class CustomTrackShape extends RoundedRectSliderTrackShape {
   final BuildContext context;
+  Color? color;
 
-  CustomTrackShape(this.context);
+  CustomTrackShape(this.context, this.color);
 
   Rect getPreferredSize({
     required RenderBox parentBox,
@@ -577,7 +583,7 @@ class CustomTrackShape extends RoundedRectSliderTrackShape {
     double additionalActiveTrackHeight = 2,
   }) {
     final canvas = context.canvas;
-    final primaryColor = Theme.of(this.context).primaryColor;
+    final primaryColor = color ?? Theme.of(this.context).primaryColor;
     final Rect trackRect = getPreferredSize(
       parentBox: parentBox,
       offset: Offset(24, thumbCenter.dy - 1),

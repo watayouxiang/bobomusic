@@ -127,7 +127,7 @@ class PrevButtonState extends State<PrevButton> {
         final disabled = (player.playerMode == PlayerMode.random || player.playerMode == PlayerMode.signalLoop || (player.current?.prev != null && player.current!.prev.isEmpty));
 
         return IconButton(
-          color: primaryColor,
+          color: widget.color ?? primaryColor,
           iconSize: widget.size,
           onPressed: () {
             if (player.current == null) {
@@ -172,7 +172,7 @@ class NextButtonState extends State<NextButton> {
         final disabled = player.current?.next != null && player.current!.next.isEmpty;
 
         return IconButton(
-          color: primaryColor,
+          color: widget.color ?? primaryColor,
           iconSize: widget.size,
           onPressed: () {
             if (player.current == null) {
