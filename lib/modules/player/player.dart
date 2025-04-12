@@ -1,12 +1,14 @@
 import "dart:async";
 
 import "package:bobomusic/modules/player/const.dart";
+import "package:bobomusic/utils/color.dart";
 import "package:bot_toast/bot_toast.dart";
 import "package:flutter/material.dart";
 import "package:bobomusic/modules/player/player_card/card.dart";
 import "package:bobomusic/modules/player/list.dart";
 import "package:bobomusic/modules/player/model.dart";
 import "package:provider/provider.dart";
+
 
 class PlayerView extends StatelessWidget {
   final bool cancelMargin;
@@ -21,12 +23,12 @@ class PlayerView extends StatelessWidget {
       },
       child: Container(
         height: 50,
-        width: MediaQuery.of(context).size.width - 30,
+        width: MediaQuery.of(context).size.width - 32,
         margin: EdgeInsets.only(bottom: cancelMargin ? 0 : 34),
         padding: const EdgeInsets.only(left: 15, right: 10),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(4),
-          color: Theme.of(context).secondaryHeaderColor,
+          borderRadius: const BorderRadius.only(topLeft: Radius.circular(4), topRight: Radius.circular(4)),
+          color: ColorPallette.colorMix(context, 0.1),
         ),
         child: const Flex(
           direction: Axis.horizontal,
