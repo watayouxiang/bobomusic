@@ -1,16 +1,14 @@
-import "dart:convert";
-
 import "package:bobomusic/components/add_to_order/add_to_order.dart";
 import "package:bobomusic/db/db.dart";
 import "package:bobomusic/modules/music_plaza/components/detail.dart";
 import "package:bobomusic/modules/music_plaza/search/search.dart";
 import "package:bobomusic/origin_sdk/origin_types.dart";
+import "package:bobomusic/utils/read_data_from_json.dart";
 import "package:cached_network_image/cached_network_image.dart";
 import "package:dio/dio.dart";
 import "package:flutter/material.dart";
 import "package:flutter_easyloading/flutter_easyloading.dart";
 import "package:path/path.dart" as path;
-import "package:flutter/services.dart" show rootBundle;
 
 final dio = Dio();
 final DBOrder db = DBOrder();
@@ -36,7 +34,11 @@ class MusicPlazaViewState extends State<MusicPlazaView> with AutomaticKeepAliveC
   }
 
   Future<void> _loadSingerList() async {
-    final list = await readDataFromJson(filePath: path.join("assets", "chinese.json"));
+    final jsonData = await readDataFromJson(filePath: path.join("assets", "chinese.json"));
+    final list = jsonData.map((item) {
+      return MusicOrderItem.fromJson(item as Map<String, dynamic>);
+    }).toList();
+
     setState(() {
       singerList = list;
     });
@@ -172,20 +174,5 @@ class MusicPlazaViewState extends State<MusicPlazaView> with AutomaticKeepAliveC
         },
       );
     }).toList();
-  }
-}
-
-Future<List> readDataFromJson({required String filePath}) async {
-  try {
-    String jsonString = await rootBundle.loadString(filePath);
-    dynamic jsonData = json.decode(jsonString);
-
-    List targetList = jsonData.map((item) {
-      return MusicOrderItem.fromJson(item as Map<String, dynamic>);
-    }).toList();
-
-    return targetList;
-  } catch(error) {
-    return [];
   }
 }
