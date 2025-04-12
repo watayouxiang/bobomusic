@@ -42,7 +42,7 @@ class MusicPlazaViewState extends State<MusicPlazaView> with AutomaticKeepAliveC
     });
 
     EasyLoading.show(maskType: EasyLoadingMaskType.black);
-  
+
     for (var order in singerList) {
       if (!await db.isTableExists(order.name)) {
         await db.createOrderTable(order.name);
@@ -124,8 +124,8 @@ class MusicPlazaViewState extends State<MusicPlazaView> with AutomaticKeepAliveC
                   borderRadius: BorderRadius.all(Radius.circular(20)),
                 ),
                 hintText: "搜索互联网歌曲",
-                hintStyle: TextStyle(fontSize: 13),
-                contentPadding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+                hintStyle: TextStyle(fontSize: 12),
+                contentPadding: EdgeInsets.symmetric(vertical: 13.5, horizontal: 16),
               ),
             ),
           ),
@@ -179,7 +179,7 @@ Future<List> readDataFromJson({required String filePath}) async {
   try {
     String jsonString = await rootBundle.loadString(filePath);
     dynamic jsonData = json.decode(jsonString);
-    
+
     List targetList = jsonData.map((item) {
       return MusicOrderItem.fromJson(item as Map<String, dynamic>);
     }).toList();
