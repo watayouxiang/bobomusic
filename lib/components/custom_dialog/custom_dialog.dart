@@ -59,9 +59,9 @@ class CustomDialog extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                ElevatedButton(
+                FilledButton(
                   onPressed: onCancel,
-                  style: ElevatedButton.styleFrom(
+                  style: FilledButton.styleFrom(
                     backgroundColor: Colors.grey,
                   ),
                   child: const Text('取消', style: TextStyle(color: Colors.white)),
