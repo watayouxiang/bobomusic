@@ -8,7 +8,7 @@ import "package:package_info_plus/package_info_plus.dart";
 import "package:url_launcher/url_launcher.dart";
 
 // 检查更新版本
-updateAppVersion(BuildContext context) async {
+updateAppVersion(BuildContext context, {bool? showToast = true}) async {
   try {
     final checker = ReleaseChecker(
       owner: "Redstone-1",
@@ -21,7 +21,7 @@ updateAppVersion(BuildContext context) async {
 
     EasyLoading.dismiss();
 
-    if (!isUpdateAvailable) {
+    if (!isUpdateAvailable && showToast!) {
       BotToast.showText(text: "已经是最新版本");
       return;
     }
