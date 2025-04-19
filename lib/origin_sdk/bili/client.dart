@@ -9,8 +9,7 @@ import "../origin_types.dart";
 import "./sign.dart";
 import "./types.dart";
 
-const _userAgent =
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
+const _userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
 const _referer = "https://www.bilibili.com/";
 const _cacheCreatedAtKey = "bili_catch_created_at";
 const _signImgKey = "bili_sign_img_key";
@@ -50,29 +49,33 @@ class BiliClient implements OriginService {
 
     if (createAt != null) {
       if (DateTime.now()
-              .difference(DateTime.fromMillisecondsSinceEpoch(createAt))
-              .inDays <
-          1) {
+        .difference(DateTime.fromMillisecondsSinceEpoch(createAt))
+        .inDays < 1
+      ) {
         final signImgKey = localStorage.getString(_signImgKey);
         final signSubKey = localStorage.getString(_signSubKey);
         final spiB3 = localStorage.getString(_spiB3);
         final spiB4 = localStorage.getString(_spiB4);
-        if (signSubKey != null &&
-            signImgKey != null &&
-            spiB3 != null &&
-            spiB4 != null) {
+        if (
+          signSubKey != null &&
+          signImgKey != null &&
+          spiB3 != null &&
+          spiB4 != null
+        ) {
           signData = SignData(imgKey: signImgKey, subKey: signSubKey);
           spiData = SpiData(b3: spiB3, b4: spiB4);
           return;
         }
       }
     }
+
     final results = await Future.wait([getSignData(), getSpiData()]);
 
     signData = results[0] as SignData;
     spiData = results[1] as SpiData;
-    localStorage.setInt(
-        _cacheCreatedAtKey, DateTime.now().millisecondsSinceEpoch);
+
+    localStorage.setInt(_cacheCreatedAtKey, DateTime.now().millisecondsSinceEpoch);
+
     if (signData != null) {
       localStorage.setString(_signImgKey, signData!.imgKey);
       localStorage.setString(_signSubKey, signData!.subKey);
@@ -85,8 +88,7 @@ class BiliClient implements OriginService {
 
   // 获取签名秘钥
   Future<SignData> getSignData() async {
-    final response =
-        await dio.get("https://api.bilibili.com/x/web-interface/nav");
+    final response = await dio.get("https://api.bilibili.com/x/web-interface/nav");
 
     if (response.statusCode == 200) {
       return SignData.fromJson(response.data);
@@ -97,8 +99,7 @@ class BiliClient implements OriginService {
 
   // 获取 spi 唯一标识
   Future<SpiData> getSpiData() async {
-    final response =
-        await dio.get("https://api.bilibili.com/x/frontend/finger/spi");
+    final response = await dio.get("https://api.bilibili.com/x/frontend/finger/spi");
 
     if (response.statusCode == 200) {
       return SpiData.fromJson(response.data);
@@ -113,8 +114,8 @@ class BiliClient implements OriginService {
     await init();
     const url = "https://api.bilibili.com/x/web-interface/wbi/search/type";
     Map<String, String> query = _signParams({
-      "search_type": "video",
       "keyword": params.keyword,
+      "search_type": "video",
       "page": params.page.toString(),
       "pagesize": "20",
     });
