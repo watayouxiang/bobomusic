@@ -24,7 +24,7 @@ class TitleAreaViewState extends State<TitleAreaView> {
             Text(widget.title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             if (widget.onTapNextPage != null)
             InkWell(
-              child: const Icon(Icons.arrow_forward_ios, size: 18),
+              child: const Icon(Icons.chevron_right, size: 24),
               onTap: () {
                 widget.onTapNextPage!();
               },

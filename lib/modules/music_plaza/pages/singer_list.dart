@@ -1,16 +1,12 @@
-import "package:bobomusic/components/add_to_order/add_to_order.dart";
-import "package:bobomusic/db/db.dart";
 import "package:bobomusic/modules/music_plaza/components/detail.dart";
 import "package:bobomusic/origin_sdk/origin_types.dart";
 import "package:bobomusic/utils/read_data_from_json.dart";
 import "package:cached_network_image/cached_network_image.dart";
 import "package:dio/dio.dart";
 import "package:flutter/material.dart";
-import "package:flutter_easyloading/flutter_easyloading.dart";
 import "package:path/path.dart" as path;
 
 final dio = Dio();
-final DBOrder db = DBOrder();
 
 class SingerList extends StatefulWidget {
   const SingerList({super.key});
@@ -41,21 +37,6 @@ class SingerListViewState extends State<SingerList> with AutomaticKeepAliveClien
     setState(() {
       singerList = list;
     });
-
-    EasyLoading.show(maskType: EasyLoadingMaskType.black);
-
-    for (var order in singerList) {
-      if (!await db.isTableExists(order.name)) {
-        await db.createOrderTable(order.name);
-
-        for (var music in order.musicList) {
-          final newM = (music as MusicItem).copyWith(playId: music.playId.isEmpty ? uuid.v4() : music.playId, orderName: order.name);
-          await db.insert(order.name, musicItem2Row(music: newM));
-        }
-      }
-    }
-
-    EasyLoading.dismiss();
   }
 
   // 歌单封面

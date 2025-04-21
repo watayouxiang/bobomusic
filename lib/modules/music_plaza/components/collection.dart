@@ -43,7 +43,7 @@ class CollectionViewState extends State<Collection> {
           CollectionItem(
             imageUrl: list[i].cover!,
             name: list[i].name,
-            author: list[i].author,
+            author: list[i].author.isNotEmpty ? list[i].author : "哔哩哔哩用户",
             onTap: () {
               Navigator.of(context).push(MaterialPageRoute(
                 builder: (BuildContext context) {
@@ -59,7 +59,7 @@ class CollectionViewState extends State<Collection> {
           CollectionItem(
             imageUrl: list[i + 1].cover!,
             name: list[i + 1].name,
-            author: list[i + 1].author,
+            author: list[i].author.isNotEmpty ? list[i].author : "哔哩哔哩用户",
             onTap: () {
               Navigator.of(context).push(MaterialPageRoute(
                 builder: (BuildContext context) {
@@ -85,10 +85,10 @@ class CollectionViewState extends State<Collection> {
     return SafeArea(
       bottom: true,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const TitleAreaView(title: "收藏合集"),
           Column(children: singerList),
+          const SizedBox(height: 50)
         ],
       )
     );

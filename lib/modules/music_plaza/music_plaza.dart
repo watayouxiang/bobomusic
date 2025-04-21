@@ -59,7 +59,7 @@ class MusicPlazaViewState extends State<MusicPlazaView> with AutomaticKeepAliveC
         bottom: true,
         child: Container(
           color: const Color.fromARGB(255, 245, 245, 245),
-          padding: const EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 50),
+          padding: const EdgeInsets.only(left: 20, right: 20, top: 10),
           child: const SingleChildScrollView(
             child: Column(
               children: [
