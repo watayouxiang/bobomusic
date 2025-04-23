@@ -22,7 +22,6 @@ Future checkMusicLocalRepeat(BuildContext context, MusicItem target, VoidCallbac
       context: context,
       builder: (BuildContext context) {
         return CustomDialog(
-          title: "提示",
           body: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

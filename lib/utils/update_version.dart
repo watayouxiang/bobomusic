@@ -32,7 +32,6 @@ updateAppVersion(BuildContext context, {bool? showToast = true}) async {
           context: context,
           builder: (BuildContext context) {
             return CustomDialog(
-              title: "提示",
               body: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

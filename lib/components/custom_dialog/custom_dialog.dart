@@ -1,6 +1,6 @@
 // ignore_for_file: use_super_parameters
-
-import 'package:flutter/material.dart';
+import "package:flutter/material.dart";
+import "package:path/path.dart" as path;
 
 class CustomDialog extends StatelessWidget {
   final String? title;
@@ -26,31 +26,34 @@ class CustomDialog extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 12),
+            child: ClipRRect(
+              borderRadius: const BorderRadius.all(Radius.circular(16)), // 设置足够大的圆角半径
+              child: Image.asset(path.join("assets", "images", "gif_cat_dog.gif"))
+            ),
+          ),
           // 标题和关闭按钮区域
           if (title != null)
             Padding(
-              padding: const EdgeInsets.only(left: 16, top: 4, bottom: 2),
+              padding: const EdgeInsets.only(left: 24, bottom: 6),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Expanded(child: Text(
                     title!,
                     style: TextStyle(
                       color: Theme.of(context).primaryColor,
                       fontWeight: FontWeight.bold,
-                      fontSize: 18,
+                      fontSize: 16,
                     ),
                   )),
-                  IconButton(
-                    icon: const Icon(Icons.close, color: Colors.grey),
-                    onPressed: onCancel,
-                  ),
                 ],
               ),
             ),
           // 内容区域
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 26, vertical: 4),
             child: body,
           ),
           // 底部按钮区域
@@ -64,15 +67,15 @@ class CustomDialog extends StatelessWidget {
                   style: FilledButton.styleFrom(
                     backgroundColor: Colors.grey,
                   ),
-                  child: const Text('取消', style: TextStyle(color: Colors.white)),
+                  child: const Text("取消", style: TextStyle(color: Colors.white)),
                 ),
                 const SizedBox(width: 20),
                 FilledButton(
                   onPressed: onConfirm,
                   style: FilledButton.styleFrom(
-                    backgroundColor: Colors.red,
+                    backgroundColor: Theme.of(context).primaryColor,
                   ),
-                  child: const Text('确认'),
+                  child: const Text("确认"),
                 ),
               ],
             ),

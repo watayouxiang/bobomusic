@@ -73,7 +73,6 @@ class EditMusicOrderState extends State<EditMusicOrder> {
                       context: context,
                       builder: (BuildContext context) {
                         return CustomDialog(
-                          title: "提示",
                           body: const Text("确定删除此歌单?"),
                           onConfirm: () async {
                             await dropOrderTable();

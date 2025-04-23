@@ -294,7 +294,6 @@ class UserMusicOrderView extends State<MusicOrderView> with AutomaticKeepAliveCl
         context: context,
         builder: (BuildContext context) {
           return CustomDialog(
-            title: "提示",
             body: const Text("删除此歌单所有歌曲?"),
             onConfirm: () async {
               EasyLoading.show(maskType: EasyLoadingMaskType.black);
