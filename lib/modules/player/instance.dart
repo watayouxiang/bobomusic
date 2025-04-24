@@ -187,6 +187,7 @@ class BBPlayer {
     } else {
       await audio.seek(Duration.zero);
       await play(music: current);
+      await audio.play();
     }
     _updateLocalStorage();
   }
@@ -213,7 +214,7 @@ class BBPlayer {
     // 随机
     if (playerMode == PlayerMode.random) {
       final randomList = await db.queryRandom(tableName: current!.orderName);
-    
+
       if (randomList.isEmpty) {
         BotToast.showText(text: "当前列表是空的 QAQ", duration: const Duration(seconds: 3));
         return;
@@ -377,7 +378,7 @@ class BBPlayer {
 
     playerList.clear();
     playerList.addAll(newMusicList);
-    
+
     EasyLoading.dismiss();
 
     if (current != null) {

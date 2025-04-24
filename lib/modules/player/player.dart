@@ -135,10 +135,18 @@ class PrevButtonState extends State<PrevButton> {
               return;
             }
 
+            if (player.playerMode == PlayerMode.signalLoop) {
+              BotToast.showText(text: "单曲循环中，重新播放");
+              player.next();
+              return;
+            }
+
             if (disabled) {
               BotToast.showText(text: "当前歌曲不支持此操作");
               return;
             }
+
+
 
             player.prev();
           },
@@ -177,6 +185,12 @@ class NextButtonState extends State<NextButton> {
           onPressed: () {
             if (player.current == null) {
               BotToast.showText(text: "没有正在听的歌曲，无法播放下一曲");
+              return;
+            }
+
+            if (player.playerMode == PlayerMode.signalLoop) {
+              BotToast.showText(text: "单曲循环中，重新播放");
+              player.next();
               return;
             }
 
