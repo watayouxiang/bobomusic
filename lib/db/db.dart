@@ -5,6 +5,8 @@ import "package:path/path.dart";
 class DBName {
   /// 歌单
   static String orderName  = "musicOrder";
+  /// 合集
+  static String collection  = "collection";
 }
 
 class TableName {
@@ -14,6 +16,8 @@ class TableName {
   static String musicILike  = "我喜欢";
   /// 待播放列表
   static String musicWaitPlay  = "待播放列表";
+  /// 待播放列表
+  static String collection  = "收藏合集";
 }
 
 // 基础数据库帮助类
@@ -100,7 +104,7 @@ abstract class BaseDatabaseHelper {
           SELECT MIN(id) FROM $tableName
           GROUP BY $groupBy
         )
-        ${isOrder ? "ORDER BY name DESC" : ""}
+        ${isOrder ? "ORDER BY name ASC" : ""}
       """);
     } catch (e) {
       print("Query error: $e");
@@ -108,17 +112,17 @@ abstract class BaseDatabaseHelper {
     }
   }
 
-  Future<List<Map<String, dynamic>>> queryByParam(String tableName, String param) async {    
+  Future<List<Map<String, dynamic>>> queryByParam(String tableName, String param) async {
     try {
       Database db = await database;
       return await db.rawQuery("""
         SELECT * FROM $tableName
         WHERE id IN (
           SELECT MIN(id) FROM $tableName
-          WHERE mid =? OR name LIKE? OR playId=?
+          WHERE mid =? OR name LIKE? OR playId =? OR
           GROUP BY playId
         )
-        ORDER BY name DESC
+        ORDER BY name ASC
       """, [param, "%$param%", param]);
     } catch (e) {
       print("Update error: $e");
@@ -126,7 +130,7 @@ abstract class BaseDatabaseHelper {
     }
   }
 
-  Future<List<Map<String, dynamic>>> queryRandom({required String tableName, int? limit}) async {    
+  Future<List<Map<String, dynamic>>> queryRandom({required String tableName, int? limit}) async {
     try {
       Database db = await database;
       return await db.query(
@@ -145,10 +149,11 @@ abstract class BaseDatabaseHelper {
       Database db = await database;
       String mid = row["mid"];
       String playId = row["playId"];
+
       return await db.update(
         tableName,
         row,
-        where: "mid =? OR playId=?",
+        where: "mid =? OR playId =?",
         whereArgs: [mid, playId],
       );
     } catch (e) {
@@ -257,6 +262,75 @@ class DBOrder extends BaseDatabaseHelper {
   }
 }
 
+class DBCollection extends BaseDatabaseHelper {
+  DBCollection({
+    int version = 1,
+  }) : super._internal(DBName.collection, version);
+
+  @override
+  Future<void> _onCreate(Database db, int version) async {
+    /// 收藏合集
+    await db.execute(
+      "CREATE TABLE ${TableName.collection} (id INTEGER PRIMARY KEY AUTOINCREMENT, cid TEXT, name TEXT, cover TEXT, author TEXT, origin TEXT, musicListTableName TEXT)",
+    );
+  }
+
+  @override
+  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {}
+
+  @override
+  Future<int> update(String tableName, Map<String, dynamic> row) async {
+    try {
+      Database db = await database;
+      String cid = row["cid"];
+
+      return await db.update(
+        tableName,
+        row,
+        where: "cid =?",
+        whereArgs: [cid],
+      );
+    } catch (e) {
+      print("Update error: $e");
+      rethrow;
+    }
+  }
+
+  @override
+  Future<int> delete(String tableName, String param) async {
+    try {
+      Database db = await database;
+      return await db.delete(
+        tableName,
+        where: "cid =? OR name=?",
+        whereArgs: [param, param],
+      );
+    } catch (e) {
+      print("Delete error: $e");
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<Map<String, dynamic>>> queryByParam(String tableName, String param) async {
+    try {
+      Database db = await database;
+      return await db.rawQuery("""
+        SELECT * FROM $tableName
+        WHERE id IN (
+          SELECT MIN(id) FROM $tableName
+          WHERE cid =? OR name LIKE?
+          GROUP BY playId
+        )
+        ORDER BY name ASC
+      """, [param, "%$param%"]);
+    } catch (e) {
+      print("Update error: $e");
+      rethrow;
+    }
+  }
+}
+
 Map<String, dynamic> musicItem2Row({required MusicItem music, String? prev, String? next, String? isFirst, String? isLast}) {
   Map<String, dynamic> musicRow = {
     "mid": music.id,
@@ -292,6 +366,35 @@ MusicItem row2MusicItem({required Map<String, dynamic> dbRow, String? prev, Stri
     next: next ?? dbRow["next"] as String,
     isFirst: isFirst ?? dbRow["isFirst"] as String,
     isLast: isLast ?? dbRow["isLast"] as String,
+  );
+}
+
+String genMusicListTableName({required String id}) {
+  return "musicList_$id";
+}
+
+Map<String, dynamic> collection2Row({required CollectionItemType collection}) {
+  final musicListTableName = genMusicListTableName(id: collection.id);
+  Map<String, dynamic> musicRow = {
+    "cid": collection.id,
+    "name": collection.name,
+    "cover": collection.cover,
+    "author": collection.author,
+    "origin": collection.origin.value,
+    "musicListTableName": musicListTableName,
+  };
+
+  return musicRow;
+}
+
+CollectionItemType row2Collection({required Map<String, dynamic> dbRow}) {
+  return CollectionItemType(
+    id: dbRow["cid"] as String,
+    cover: dbRow["cover"] as String,
+    name: dbRow["name"] as String,
+    author: dbRow["author"] as String,
+    origin: OriginType.getByValue(dbRow["origin"]),
+    musicListTableName: dbRow["musicListTableName"] as String
   );
 }
 

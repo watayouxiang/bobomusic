@@ -6,8 +6,9 @@ class CollectionItem extends StatefulWidget {
   final String name;
   final String author;
   final VoidCallback? onTap;
+  final VoidCallback? onLongPress;
 
-  const CollectionItem({super.key, required this.imageUrl, required this.name, required this.author, this.onTap});
+  const CollectionItem({super.key, required this.imageUrl, required this.name, required this.author, this.onTap, this.onLongPress});
 
   @override
   State<CollectionItem> createState() => CollectionItemViewState();
@@ -38,6 +39,11 @@ class CollectionItemViewState extends State<CollectionItem> {
         onTap: () {
           if (widget.onTap != null) {
             widget.onTap!();
+          }
+        },
+        onLongPress: () {
+          if (widget.onLongPress != null) {
+            widget.onLongPress!();
           }
         },
         child: Column(

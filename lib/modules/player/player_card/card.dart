@@ -132,7 +132,7 @@ class PlayerCardState extends State<PlayerCard> {
   Widget _buildMusicInfo(Color primaryColor) {
     final player = Provider.of<PlayerModel>(context, listen: false);
     String subTitle =
-        player.current!.orderName.isEmpty ? "未知歌单" : player.current!.orderName;
+        player.current!.orderName.isEmpty ? "未知歌单" : (player.current!.orderName.contains("musicList_") ? "合集" : player.current!.orderName);
     if (player.current!.author.isNotEmpty) {
       subTitle = "$subTitle  ${player.current!.author}";
     }

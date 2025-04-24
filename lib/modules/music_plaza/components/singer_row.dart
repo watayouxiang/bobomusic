@@ -76,7 +76,6 @@ class SingerRowViewState extends State<SingerRow> {
           },
         )
       );
-      singerViewList.add(const SizedBox(width: 10));
     }
 
     setState(() {
@@ -100,7 +99,10 @@ class SingerRowViewState extends State<SingerRow> {
               ),
             );
           }),
-          Row(children: singerList),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: singerList
+          ),
         ],
       )
     );

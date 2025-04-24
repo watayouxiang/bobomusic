@@ -2,9 +2,12 @@ import "dart:async";
 
 import "package:bobomusic/components/sheet/bottom_sheet.dart";
 import "package:bobomusic/constants/cache_key.dart";
+import "package:bobomusic/db/db.dart";
+import "package:bobomusic/event_bus/event_bus.dart";
 import "package:bobomusic/modules/download/model.dart";
 import "package:bobomusic/modules/music_order/utils.dart";
 import "package:bobomusic/utils/check_music_local_repeat.dart";
+import "package:bot_toast/bot_toast.dart";
 import "package:cached_network_image/cached_network_image.dart";
 import "package:flutter/material.dart";
 import "package:bobomusic/components/text_tags/tags.dart";
@@ -13,8 +16,12 @@ import "package:bobomusic/modules/player/player.dart";
 import "package:bobomusic/modules/player/model.dart";
 import "package:bobomusic/origin_sdk/origin_types.dart";
 import "package:bobomusic/origin_sdk/service.dart";
+import "package:flutter_easyloading/flutter_easyloading.dart";
 import "package:provider/provider.dart";
 import "package:shared_preferences/shared_preferences.dart";
+import "package:uuid/uuid.dart";
+
+const uuid = Uuid();
 
 class SearchView extends StatefulWidget {
   const SearchView({super.key});
@@ -61,7 +68,7 @@ class SearchViewState extends State<SearchView> {
   }
 
   // 单个歌曲点击
-  void _onMusicClickHandler(SearchItem detail) {
+  void _onClickMusic(SearchItem detail) {
     final player = Provider.of<PlayerModel>(context, listen: false);
     final music = MusicItem(
       id: detail.id,
@@ -107,6 +114,91 @@ class SearchViewState extends State<SearchView> {
         title: const Text("添加到待播放列表"),
         onPressed: () {
           player.addPlayerList([music]);
+        },
+      ),
+    ]);
+  }
+
+  // 歌单合集点击
+  void _onClickCollection(SearchItem detail) {
+    openBottomSheet(context, [
+      SheetItem(
+        title: Text(
+          detail.name,
+          style: TextStyle(
+            color: Theme.of(context).primaryColor,
+            fontWeight: FontWeight.bold,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ),
+      SheetItem(
+        title: const Text("查看合集"),
+        onPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => MusicOrderDetail(
+                shouldLoadData: false,
+                musicOrderItem: MusicOrderItem(
+                  id: detail.id,
+                  cover: detail.cover,
+                  name: detail.name,
+                  author: detail.author,
+                  desc: "",
+                  musicList: detail.musicList ?? [],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+      SheetItem(
+        title: const Text("收藏合集"),
+        onPressed: () async {
+          EasyLoading.show(maskType: EasyLoadingMaskType.black);
+          final musicListTableName = genMusicListTableName(id: detail.id);
+          final DBCollection dbCollection = DBCollection();
+
+          try {
+            final List<Map<String, dynamic>> dbcList = await dbCollection.queryAll(TableName.collection);
+            final index = dbcList.indexWhere((item) => item["musicListTableName"] as String == musicListTableName);
+
+            if(index > -1) {
+              EasyLoading.dismiss();
+              BotToast.showText(text: "该合集已经收藏了");
+              return;
+            }
+
+            final id = await dbCollection.insert(TableName.collection, collection2Row(
+              collection: CollectionItemType(
+                id: detail.id,
+                cover: detail.cover,
+                name: detail.name,
+                author: detail.author,
+                origin: detail.origin,
+                musicListTableName: musicListTableName,
+              ))
+            );
+
+            if (id > -1) {
+              final DBOrder db = DBOrder();
+              await db.createOrderTable(musicListTableName);
+
+              for (var music in detail.musicList!) {
+                final newM = music.copyWith(playId: uuid.v4(), orderName: musicListTableName);
+                await db.insert(musicListTableName, musicItem2Row(music: newM));
+              }
+
+              EasyLoading.dismiss();
+            }
+
+            eventBus.fire(RefreshCollectionList());
+          } catch(error) {
+            EasyLoading.dismiss();
+            BotToast.showText(text: "收藏出错辽 ~");
+            await dbCollection.delete(TableName.collection, musicListTableName);
+            await db.dropTable(musicListTableName);
+          }
         },
       ),
     ]);
@@ -239,7 +331,7 @@ class SearchViewState extends State<SearchView> {
     if (_searchItemList.isEmpty) {
       return buildSearchHistory();
     }
-    var navigator = Navigator.of(context);
+
     return ListView.builder(
       controller: _scrollController,
       padding: const EdgeInsets.only(bottom: 100),
@@ -283,24 +375,9 @@ class SearchViewState extends State<SearchView> {
           onTap: () async {
             final detail = await service.searchDetail(item.id);
             if (detail.type == SearchType.orderName) {
-              // 歌单
-              navigator.push(
-                MaterialPageRoute(
-                  builder: (context) => MusicOrderDetail(
-                    shouldLoadData: false,
-                    musicOrderItem: MusicOrderItem(
-                      id: detail.id,
-                      cover: detail.cover,
-                      name: detail.name,
-                      author: detail.author,
-                      desc: "",
-                      musicList: detail.musicList ?? [],
-                    ),
-                  ),
-                ),
-              );
+              _onClickCollection(detail);
             } else {
-              _onMusicClickHandler(detail);
+              _onClickMusic(detail);
             }
           },
         );

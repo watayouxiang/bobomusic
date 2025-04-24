@@ -80,6 +80,25 @@ class SearchItem {
   });
 }
 
+/// 合集
+class CollectionItemType {
+  final String id; // ID
+  final String cover; // 封面
+  final String name; // 名称
+  final String author; // 作者
+  final String musicListTableName; // 列表表名
+  final OriginType origin; // 来源
+
+  const CollectionItemType({
+    required this.id,
+    required this.cover,
+    required this.name,
+    required this.author,
+    required this.origin,
+    required this.musicListTableName,
+  });
+}
+
 /// 搜索建议
 class SearchSuggestItem {
   final String name; // 显示内容
@@ -289,7 +308,4 @@ abstract class OriginService {
 
   /// 歌曲详情
   Future<MusicUrl> getMusicUrl(String id);
-
-  // /// 下载歌曲
-  // Future<void> downloadMusic(String id, String name, String targetDir);
 }

@@ -8,6 +8,7 @@ class EmptyPage extends StatefulWidget {
   final double imageTopPadding;
   final double imageBottomPadding;
   final double? imageWidth;
+  final Widget? customImage;
 
   const EmptyPage({
     super.key,
@@ -16,6 +17,7 @@ class EmptyPage extends StatefulWidget {
     required this.imageBottomPadding,
     required this.imageTopPadding,
     this.imageWidth,
+    this.customImage,
   });
 
   @override
@@ -39,7 +41,7 @@ class EmptyPageState extends State<EmptyPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Image.asset(
+                    widget.customImage ?? Image.asset(
                       path.join("assets", "images", "empty.png"),
                       width: widget.imageWidth ?? screenSize.height - 550 / 2,
                       fit: BoxFit.contain,
@@ -65,7 +67,7 @@ class EmptyPageState extends State<EmptyPage> {
                 child: Column(
                   children: [
                     SizedBox(height: widget.imageTopPadding),
-                    Image.asset(
+                    widget.customImage ?? Image.asset(
                       path.join("assets", "images", "empty.png"),
                       width: screenSize.width / 2 + 50,
                       fit: BoxFit.contain,
