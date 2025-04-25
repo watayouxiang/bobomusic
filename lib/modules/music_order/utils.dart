@@ -125,9 +125,10 @@ Future<List<MusicItem>> getUpdatedMusicList({required String tabName}) async {
   final DBOrder db = DBOrder();
   List<MusicItem> newMusicList = [];
   final isWaitPlay = tabName == TableName.musicWaitPlay;
+  final needOrder = isWaitPlay || tabName.startsWith("musicList_");
 
   try {
-    final dbMusics = await db.queryAll(tabName, groupBy: isWaitPlay ? "playId" : "name", needOrder: isWaitPlay ? false : true);
+    final dbMusics = await db.queryAll(tabName, groupBy: isWaitPlay ? "playId" : "name", needOrder: needOrder ? false : true);
     final len = dbMusics.length;
 
     if (dbMusics.isNotEmpty) {

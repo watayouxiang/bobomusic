@@ -18,12 +18,12 @@ class CollectionItemViewState extends State<CollectionItem> {
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
-    final width = (screenSize.width - 56) / 2;
+    final width = (screenSize.width - 52) / 2;
 
     return Container(
       width: width,
       height: width + 24,
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: const Color.fromARGB(255, 245, 245, 245),
         borderRadius: BorderRadius.circular(8),

@@ -24,12 +24,16 @@ class TitleAreaViewState extends State<TitleAreaView> {
             children: [
               Text(widget.title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               if (widget.onTapNextPage != null)
-                InkWell(
-                  child: const Icon(Icons.chevron_right, size: 24),
-                  onTap: () {
-                    widget.onTapNextPage!();
-                  },
+                Transform.translate(
+                  offset: const Offset(6, 0),
+                  child: InkWell(
+                    child: const Icon(Icons.chevron_right, size: 24),
+                    onTap: () {
+                      widget.onTapNextPage!();
+                    },
+                  ),
                 ),
+
               if(widget.customRight != null)
                 widget.customRight!,
             ]

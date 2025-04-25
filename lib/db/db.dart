@@ -119,7 +119,7 @@ abstract class BaseDatabaseHelper {
         SELECT * FROM $tableName
         WHERE id IN (
           SELECT MIN(id) FROM $tableName
-          WHERE mid =? OR name LIKE? OR playId =? OR
+          WHERE mid =? OR name LIKE? OR playId =?
           GROUP BY playId
         )
         ORDER BY name ASC

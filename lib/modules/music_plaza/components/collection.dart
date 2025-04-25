@@ -24,7 +24,6 @@ class Collection extends StatefulWidget {
 
 class CollectionViewState extends State<Collection> {
   List<Widget> singerList = [];
-  bool isChecking = false;
 
   @override
   void initState() {
@@ -40,7 +39,7 @@ class CollectionViewState extends State<Collection> {
   }
 
   Future<void> _loadSingerList() async {
-    final List<Map<String, dynamic>> collectionList = await dbCollection.queryAll(TableName.collection);
+    final List<Map<String, dynamic>> collectionList = await dbCollection.queryAll(TableName.collection, needOrder: false);
     List<Widget> singerViewList = [];
 
     if (collectionList.length == 1) {
@@ -75,7 +74,7 @@ class CollectionViewState extends State<Collection> {
       singerViewList.add(
         Row(children: [
           genCollectionItem(collectionPrev),
-          const SizedBox(width: 16),
+          const SizedBox(width: 12),
           if(collectionNext != null)
           genCollectionItem(collectionNext)
         ])
@@ -157,6 +156,9 @@ class CollectionViewState extends State<Collection> {
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
+    final emptyPageHeight = MediaQuery.of(context).size.height - 400;
+    final imageWidth = screenSize.width ~/ 2;
+    final restHeight = emptyPageHeight - imageWidth - (20 + 32 + 30 + 48 + 30); // 20 文字高度, 32 按钮 top, 30 image bottom, 48 按钮 height, 30 凭感觉减去的高度
 
     return SafeArea(
       bottom: true,
@@ -164,33 +166,42 @@ class CollectionViewState extends State<Collection> {
         children: [
           const TitleAreaView(title: "收藏合集"),
           singerList.isEmpty ? SizedBox(
-          height: MediaQuery.of(context).size.height - 400,
-          child: EmptyPage(
-            imageTopPadding: 0,
-            imageBottomPadding: 10,
-            text: "你还没有收藏的合集",
-            btns: [
-              TextButton(
-                style: TextButton.styleFrom(
-                  backgroundColor: Theme.of(context).primaryColor,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.only(left: 32, right: 32),
-                  shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(4)))
+            height: emptyPageHeight,
+            child: Center(
+              child: EmptyPage(
+                imageTopPadding: (restHeight / 2) > 0 ? (restHeight / 2) : 0,
+                imageBottomPadding: 30,
+                text: "你还没有收藏的合集",
+                customImage: SizedBox(
+                  width: screenSize.width / 2,
+                  child: ClipRRect(
+                    borderRadius: const BorderRadius.all(Radius.circular(16)),
+                    child: Image.asset(path.join("assets", "images", "space_exploration.png"))
+                  ),
                 ),
-                onPressed: () async {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (BuildContext context) {
-                        return const SearchView();
-                      },
+                btns: [
+                  TextButton(
+                    style: TextButton.styleFrom(
+                      backgroundColor: Theme.of(context).primaryColor,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.only(left: 32, right: 32),
+                      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(4)))
                     ),
-                  );
-                },
-                child: const Text("去搜索合集"),
-              )
-            ]
-          ),
-        ) : Column(children: singerList),
+                    onPressed: () async {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (BuildContext context) {
+                            return const SearchView();
+                          },
+                        ),
+                      );
+                    },
+                    child: const Text("去搜索合集"),
+                  ),
+                ]
+              ),
+            )
+          ) : Column(children: singerList),
           const SizedBox(height: 50),
         ],
       )

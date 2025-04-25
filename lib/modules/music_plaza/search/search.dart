@@ -163,7 +163,7 @@ class SearchViewState extends State<SearchView> {
             final List<Map<String, dynamic>> dbcList = await dbCollection.queryAll(TableName.collection);
             final index = dbcList.indexWhere((item) => item["musicListTableName"] as String == musicListTableName);
 
-            if(index > -1) {
+            if(index >= 0) {
               EasyLoading.dismiss();
               BotToast.showText(text: "该合集已经收藏了");
               return;
@@ -193,6 +193,8 @@ class SearchViewState extends State<SearchView> {
             }
 
             eventBus.fire(RefreshCollectionList());
+
+            BotToast.showText(text: "收藏成功");
           } catch(error) {
             EasyLoading.dismiss();
             BotToast.showText(text: "收藏出错辽 ~");
