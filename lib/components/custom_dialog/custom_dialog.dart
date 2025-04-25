@@ -54,7 +54,9 @@ class CustomDialog extends StatelessWidget {
           // 内容区域
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 26, vertical: 4),
-            child: body,
+            child: Center(
+              child: body,
+            ),
           ),
           // 底部按钮区域
           Container(
