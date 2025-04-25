@@ -182,7 +182,10 @@ class SearchViewState extends State<SearchView> {
 
             if (id > -1) {
               final DBOrder db = DBOrder();
-              await db.createOrderTable(musicListTableName);
+
+              if(!await db.isTableExists(musicListTableName)) {
+                await db.createOrderTable(musicListTableName);
+              }
 
               for (var music in detail.musicList!) {
                 final newM = music.copyWith(playId: uuid.v4(), orderName: musicListTableName);
@@ -199,7 +202,10 @@ class SearchViewState extends State<SearchView> {
             EasyLoading.dismiss();
             BotToast.showText(text: "收藏出错辽 ~");
             await dbCollection.delete(TableName.collection, musicListTableName);
-            await db.dropTable(musicListTableName);
+
+            if (await db.isTableExists(musicListTableName)) {
+              await db.dropTable(musicListTableName);
+            }
           }
         },
       ),

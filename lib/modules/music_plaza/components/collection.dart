@@ -129,7 +129,7 @@ class CollectionViewState extends State<Collection> {
                     try {
                       await dbCollection.delete(TableName.collection, collection.id);
 
-                      if (await dbCollection.isTableExists(musicListTableName)) {
+                      if (await db.isTableExists(musicListTableName)) {
                         await db.dropTable(musicListTableName);
                       }
 
