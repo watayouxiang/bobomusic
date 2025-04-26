@@ -90,7 +90,7 @@ class CollectionViewState extends State<Collection> {
     return CollectionItem(
       imageUrl: collection.cover,
       name: collection.name,
-      author: collection.author.isNotEmpty ? collection.author : "哔哩哔哩用户",
+      author: collection.author.isNotEmpty ? collection.author : "哔哩哔哩",
       onTap: () {
         Navigator.of(context).push(MaterialPageRoute(
           builder: (BuildContext context) {

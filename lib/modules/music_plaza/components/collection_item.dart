@@ -30,8 +30,8 @@ class CollectionItemViewState extends State<CollectionItem> {
         boxShadow: const [
           BoxShadow(
             color: Color.fromARGB(255, 214, 214, 214),
-            offset: Offset(0, 2),
-            blurRadius: 5,
+            offset: Offset(0, 1),
+            blurRadius: 1,
           ),
         ]
       ),
