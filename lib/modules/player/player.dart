@@ -137,16 +137,14 @@ class PrevButtonState extends State<PrevButton> {
 
             if (player.playerMode == PlayerMode.signalLoop) {
               BotToast.showText(text: "单曲循环中，重新播放");
-              player.next();
+              player.prev();
               return;
             }
 
             if (disabled) {
-              BotToast.showText(text: "当前歌曲不支持此操作");
+              BotToast.showText(text: "网络歌曲不支持此操作，请先收藏到歌单或收藏合集或添加整个合集到待播放列表", duration: const Duration(seconds: 8));
               return;
             }
-
-
 
             player.prev();
           },
@@ -195,7 +193,7 @@ class NextButtonState extends State<NextButton> {
             }
 
             if (disabled) {
-              BotToast.showText(text: "当前歌曲不支持此操作");
+              BotToast.showText(text: "网络歌曲不支持此操作，请先收藏到歌单或收藏合集或添加整个合集到待播放列表", duration: const Duration(seconds: 8));
               return;
             }
 
