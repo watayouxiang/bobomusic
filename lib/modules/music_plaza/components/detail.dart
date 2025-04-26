@@ -118,7 +118,13 @@ class MusicOrderDetailState extends State<MusicOrderDetail> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("合集", style: TextStyle(fontSize: 18)),
+        title: Row(
+          children: [
+            const Text("合集", style: TextStyle(fontSize: 18)),
+            const SizedBox(width: 6),
+            Text("${musicList.length} 首歌曲", style: const TextStyle(fontSize: 12, color: Colors.grey))
+          ],
+        ),
         actions: [
           PopupMenuButton(
             icon: const Icon(Icons.menu),
