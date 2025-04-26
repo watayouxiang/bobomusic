@@ -1,3 +1,4 @@
+import "package:bobomusic/utils/color.dart";
 import "package:cached_network_image/cached_network_image.dart";
 import "package:flutter/material.dart";
 
@@ -25,15 +26,8 @@ class CollectionItemViewState extends State<CollectionItem> {
       height: width + 24,
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 245, 245, 245),
+        color: ColorPallette.colorMix(context, 0.1),
         borderRadius: BorderRadius.circular(8),
-        boxShadow: const [
-          BoxShadow(
-            color: Color.fromARGB(255, 214, 214, 214),
-            offset: Offset(0, 1),
-            blurRadius: 1,
-          ),
-        ]
       ),
       child: GestureDetector(
         onTap: () {
