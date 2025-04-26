@@ -58,25 +58,6 @@ class SingerListViewState extends State<SingerList> with AutomaticKeepAliveClien
     );
   }
 
-  // 信息
-  Widget builderInfo(MusicOrderItem item) {
-    return Container(
-      width: double.infinity,
-      height: double.infinity,
-      color: const Color.fromRGBO(0, 0, 0, 0.4),
-      alignment: AlignmentDirectional.center,
-      child: Text(
-        item.musicList.length.toString(),
-        style: const TextStyle(
-          height: 1,
-          color: Colors.white,
-          fontSize: 14,
-          fontWeight: FontWeight.w400,
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -111,9 +92,6 @@ class SingerListViewState extends State<SingerList> with AutomaticKeepAliveClien
               Positioned(
                 child: builderCover(item),
               ),
-              Positioned(
-                child: builderInfo(item),
-              )
             ],
           ),
         ),
