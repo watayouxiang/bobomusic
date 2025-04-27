@@ -201,11 +201,6 @@ class BBPlayer {
   Future<void> endNext() async {
     if (current == null) return;
 
-    if(current != null && !await db.isTableExists(current!.orderName)) {
-      BotToast.showText(text: "找不到下一曲", duration: const Duration(seconds: 4));
-      return;
-    }
-
     signalLoop() async {
       await audio.seek(Duration.zero);
       await play(music: current);
@@ -218,6 +213,11 @@ class BBPlayer {
         audio.play();
       }
       _updateLocalStorage();
+      return;
+    }
+
+    if(current != null && !await db.isTableExists(current!.orderName)) {
+      BotToast.showText(text: "找不到下一曲", duration: const Duration(seconds: 4));
       return;
     }
 
