@@ -143,6 +143,10 @@ class MyAppState extends State<MyApp> {
         );
       });
     });
+
+    Timer(const Duration(seconds: 1), () {
+      updateAppVersion(context, showToast: false);
+    });
   }
 
   @override
@@ -165,11 +169,6 @@ class MyAppState extends State<MyApp> {
           color: Theme.of(context).cardColor,
         );
         EasyLoading.instance.indicatorType = EasyLoadingIndicatorType.cubeGrid;
-
-        Timer(const Duration(seconds: 1), () {
-          updateAppVersion(context, showToast: false);
-        });
-
         return child;
       },
     );
