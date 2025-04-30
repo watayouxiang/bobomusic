@@ -234,15 +234,15 @@ class DBOrder extends BaseDatabaseHelper {
   Future<void> _onCreate(Database db, int version) async {
     /// 本地
     await db.execute(
-      "CREATE TABLE ${TableName.musicLocal} (id INTEGER PRIMARY KEY AUTOINCREMENT, mid TEXT, name TEXT, cover TEXT, duration INTEGER, author TEXT, origin TEXT, playId TEXT, localPath TEXT, prev TEXT, next TEXT, orderName TEXT, isFirst TEXT, isLast TEXT)",
+      "CREATE TABLE ${TableName.musicLocal} (id INTEGER PRIMARY KEY AUTOINCREMENT, mid TEXT, name TEXT, cover TEXT, duration INTEGER, author TEXT, origin TEXT, playId TEXT, lyric TEXT, localPath TEXT, prev TEXT, next TEXT, orderName TEXT, isFirst TEXT, isLast TEXT)",
     );
     /// 我喜欢
     await db.execute(
-      "CREATE TABLE ${TableName.musicILike} (id INTEGER PRIMARY KEY AUTOINCREMENT, mid TEXT, name TEXT, cover TEXT, duration INTEGER, author INTEGER, origin TEXT, playId TEXT, localPath TEXT, prev TEXT, next TEXT, orderName TEXT, isFirst TEXT, isLast TEXT)",
+      "CREATE TABLE ${TableName.musicILike} (id INTEGER PRIMARY KEY AUTOINCREMENT, mid TEXT, name TEXT, cover TEXT, duration INTEGER, author INTEGER, origin TEXT, playId TEXT, lyric TEXT, localPath TEXT, prev TEXT, next TEXT, orderName TEXT, isFirst TEXT, isLast TEXT)",
     );
     /// 待播放列表
     await db.execute(
-      "CREATE TABLE ${TableName.musicWaitPlay} (id INTEGER PRIMARY KEY AUTOINCREMENT, mid TEXT, name TEXT, cover TEXT, duration INTEGER, author INTEGER, origin TEXT, playId TEXT, localPath TEXT, prev TEXT, next TEXT, orderName TEXT, isFirst TEXT, isLast TEXT)",
+      "CREATE TABLE ${TableName.musicWaitPlay} (id INTEGER PRIMARY KEY AUTOINCREMENT, mid TEXT, name TEXT, cover TEXT, duration INTEGER, author INTEGER, origin TEXT, playId TEXT, lyric TEXT, localPath TEXT, prev TEXT, next TEXT, orderName TEXT, isFirst TEXT, isLast TEXT)",
     );
   }
 
@@ -253,7 +253,7 @@ class DBOrder extends BaseDatabaseHelper {
     try {
       Database db = await database;
       await db.execute(
-        "CREATE TABLE $tableName (id INTEGER PRIMARY KEY AUTOINCREMENT, mid TEXT, name TEXT, cover TEXT, duration INTEGER, author TEXT, origin TEXT, playId TEXT, localPath TEXT, prev TEXT, next TEXT, orderName TEXT, isFirst TEXT, isLast TEXT)",
+        "CREATE TABLE $tableName (id INTEGER PRIMARY KEY AUTOINCREMENT, mid TEXT, name TEXT, cover TEXT, duration INTEGER, author TEXT, origin TEXT, playId TEXT, lyric TEXT, localPath TEXT, prev TEXT, next TEXT, orderName TEXT, isFirst TEXT, isLast TEXT)",
       );
     } catch (e) {
       print("Error creating table $tableName: $e");
@@ -331,7 +331,7 @@ class DBCollection extends BaseDatabaseHelper {
   }
 }
 
-Map<String, dynamic> musicItem2Row({required MusicItem music, String? prev, String? next, String? isFirst, String? isLast}) {
+Map<String, dynamic> musicItem2Row({required MusicItem music, String? prev, String? next, String? isFirst, String? isLast, String? lyric}) {
   Map<String, dynamic> musicRow = {
     "mid": music.id,
     "name": music.name,
@@ -340,6 +340,7 @@ Map<String, dynamic> musicItem2Row({required MusicItem music, String? prev, Stri
     "author": music.author,
     "origin": music.origin.value,
     "playId": music.playId,
+    "lyric": lyric ?? music.lyric,
     "orderName": music.orderName,
     "localPath": music.localPath,
     "prev": prev ?? music.prev,
@@ -351,7 +352,7 @@ Map<String, dynamic> musicItem2Row({required MusicItem music, String? prev, Stri
   return musicRow;
 }
 
-MusicItem row2MusicItem({required Map<String, dynamic> dbRow, String? prev, String? next, String? isFirst, String? isLast}) {
+MusicItem row2MusicItem({required Map<String, dynamic> dbRow, String? prev, String? next, String? isFirst, String? isLast, String? lyric}) {
   return MusicItem(
     id: dbRow["mid"] as String,
     cover: dbRow["cover"] as String,
@@ -362,6 +363,7 @@ MusicItem row2MusicItem({required Map<String, dynamic> dbRow, String? prev, Stri
     orderName: dbRow["orderName"] as String,
     localPath: dbRow["localPath"] as String,
     playId: dbRow["playId"] as String,
+    lyric: lyric ?? dbRow["lyric"] as String,
     prev: prev ?? dbRow["prev"] as String,
     next: next ?? dbRow["next"] as String,
     isFirst: isFirst ?? dbRow["isFirst"] as String,

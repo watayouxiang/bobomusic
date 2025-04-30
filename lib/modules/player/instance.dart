@@ -490,6 +490,7 @@ class BBPlayer {
         duration: data["duration"],
         origin: OriginType.getByValue(data["origin"]),
         playId: data["playId"],
+        lyric: data["lyric"],
         prev: data["prev"],
         next: data["next"],
         orderName: data["orderName"],

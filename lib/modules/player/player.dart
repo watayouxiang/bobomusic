@@ -283,7 +283,7 @@ Future<void>? showPlayerCard(BuildContext context) {
   final isLandscape = screenSize.width > screenSize.height;
 
   if (isLandscape) {
-     return navigator.push(ModalBottomSheetRoute(
+    return navigator.push(ModalBottomSheetRoute(
       isScrollControlled: true,
       // 自定义形状
       shape: const RoundedRectangleBorder(
@@ -303,7 +303,7 @@ Future<void>? showPlayerCard(BuildContext context) {
       },
     ));
   } else {
-     return navigator.push(ModalBottomSheetRoute(
+    return navigator.push(ModalBottomSheetRoute(
       isScrollControlled: true,
       builder: (context) {
         return const PlayerCard();

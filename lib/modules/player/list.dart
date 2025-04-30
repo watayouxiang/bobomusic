@@ -50,7 +50,8 @@ _buildTopBar(context, player, topHeight) {
               const Text(
                 "待播放列表",
                 style: TextStyle(
-                  fontSize: 18,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
               const SizedBox(width: 10),

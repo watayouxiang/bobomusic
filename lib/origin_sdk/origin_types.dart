@@ -35,10 +35,12 @@ enum OriginType {
 class SearchParams {
   final String keyword;
   final int page;
+  final int? pageSize;
 
   const SearchParams({
     required this.keyword,
     required this.page,
+    this.pageSize,
   });
 }
 
@@ -121,6 +123,7 @@ class MusicItem {
   String orderName = ""; // 隶属于哪个歌单
   String localPath = ""; // 本地音乐的本地路径
   String playId = ""; // 播放 id
+  String lyric = ""; // 歌词
   String prev = ""; // 上一曲
   String next = ""; // 下一曲
   String isFirst = ""; // 是否列表第一首
@@ -130,6 +133,7 @@ class MusicItem {
     orderName,
     localPath,
     playId,
+    lyric,
     prev,
     next,
     isFirst,
@@ -144,6 +148,7 @@ class MusicItem {
     this.orderName = orderName ?? "";
     this.localPath = localPath ?? "";
     this.playId = playId ?? "";
+    this.lyric = lyric ?? "";
     this.prev = prev ?? "";
     this.next = next ?? "";
     this.isFirst = isFirst ?? "";
@@ -158,6 +163,7 @@ class MusicItem {
       duration: json["duration"],
       author: json["author"],
       playId: json["playId"],
+      lyric: json["lyric"],
       origin: OriginType.getByValue(json["origin"]),
       orderName: json["orderName"],
       localPath: json["localPath"],
@@ -177,6 +183,7 @@ class MusicItem {
       "author": author,
       "origin": origin.value,
       "playId": playId,
+      "lyric": lyric,
       "orderName": orderName,
       "localPath": localPath,
       "prev": prev,
@@ -194,6 +201,7 @@ class MusicItem {
     String? author,
     OriginType? origin,
     String? playId,
+    String? lyric,
     String? orderName,
     String? localPath,
     String? prev,
@@ -207,6 +215,7 @@ class MusicItem {
       author: author ?? this.author,
       origin: origin ?? this.origin,
       playId: playId ?? this.playId,
+      lyric: lyric ?? this.lyric,
       orderName: orderName ?? this.orderName,
       localPath: localPath ?? this.localPath,
       prev: prev ?? this.prev,

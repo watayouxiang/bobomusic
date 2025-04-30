@@ -5,6 +5,9 @@ class CacheKey {
   /// 搜索歌单歌曲历史
   static String searchOrderMusicHistory = "search_order_music_history";
 
+  /// 匹配歌词时搜索的歌曲历史
+  static String searchLyricMusicHistory = "search_lyric_music_history";
+
   /// 当前播放的歌曲
   static String playerCurrent = "player_current";
 

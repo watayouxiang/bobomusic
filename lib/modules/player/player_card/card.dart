@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import "dart:async";
 import "dart:ui";
 
@@ -7,6 +9,8 @@ import "package:bobomusic/constants/covers.dart";
 import "package:bobomusic/db/db.dart";
 import "package:bobomusic/event_bus/event_bus.dart";
 import "package:bobomusic/modules/download/model.dart";
+import "package:bobomusic/modules/player/lyrics_card/lyric_search.dart";
+import "package:bobomusic/modules/player/lyrics_card/lyrics.dart";
 import "package:bobomusic/modules/player/player_card/vinyl_record.dart";
 import "package:bobomusic/modules/player/utils.dart";
 import "package:bobomusic/origin_sdk/origin_types.dart";
@@ -225,12 +229,21 @@ class PlayerCardState extends State<PlayerCard> {
     final isLocal = musicItem.localPath.isNotEmpty;
 
     return Container(
-      padding: const EdgeInsets.only(right: 45, left: 40),
+      padding: const EdgeInsets.only(right: 55, left: 50),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           InkWell(
-            child: Icon(Icons.download_outlined, color: primaryColor, size: 30),
+            child: Transform.translate(
+              offset: const Offset(0, 1),
+              child: SvgPicture.string(
+                IconsSVG.download,
+                // ignore: deprecated_member_use
+                color: primaryColor,
+                width: 26,
+                height: 26,
+              ),
+            ),
             onTap: () {
               if (isLocal) {
                 BotToast.showText(text: "本地音乐，无需下载");
@@ -244,9 +257,12 @@ class PlayerCardState extends State<PlayerCard> {
             },
           ),
           InkWell(
-            child: isLike
-              ? const Icon(Icons.favorite, size: 30, color: Colors.redAccent)
-              : Icon(Icons.favorite_border_rounded, color: primaryColor, size: 30),
+            child: Transform.translate(
+              offset: const Offset(0, 1),
+              child: isLike
+                ? const Icon(Icons.favorite, size: 28, color: Colors.redAccent)
+                : Icon(Icons.favorite_border_rounded, color: primaryColor, size: 28),
+            ),
             onTap: () async {
               try {
                 if (!isLike) {
@@ -286,12 +302,11 @@ class PlayerCardState extends State<PlayerCard> {
               IconsSVG.bilibili,
               // ignore: deprecated_member_use
               color: primaryColor,
-              width: 25,
-              height: 25,
+              width: 28,
+              height: 28,
             ),
             onTap: () {
-              final current = Provider.of<PlayerModel>(context, listen: false).current;
-              final biliVIDs = current!.id.split("_").where((e) => e.startsWith("BV")).toList();
+              final biliVIDs = player.current!.id.split("_").where((e) => e.startsWith("BV")).toList();
 
               if (biliVIDs.isNotEmpty) {
                 _launchBilibiliVideo(biliVIDs[0], player);
@@ -299,7 +314,45 @@ class PlayerCardState extends State<PlayerCard> {
                 BotToast.showText(text: "找不到视频");
               }
             },
-          )
+          ),
+          if (player.current!.orderName.isNotEmpty)
+            InkWell(
+              child: Transform.translate(
+                offset: const Offset(0, 0),
+                child: Text("词", style: TextStyle(fontSize: 22, fontWeight: FontWeight.w500, color: primaryColor))
+              ),
+              onTap: () async {
+                if (context.mounted) {
+                  final dbMusic = await db.queryByParam(player.current!.orderName, player.current!.playId);
+
+                  if (dbMusic.isNotEmpty) {
+                    final musicItem = row2MusicItem(dbRow: dbMusic[0]);
+                    final navigator = Navigator.of(context);
+
+                    if (musicItem.lyric.isNotEmpty) {
+                      navigator.push(ModalBottomSheetRoute(
+                        isScrollControlled: true,
+                        builder: (context) {
+                          return LyricsCard(
+                            imageInfo: _imageInfo,
+                            imageProvider: _imageProvider,
+                            errorCoverUrl: errorCoverUrl,
+                          );
+                        },
+                      ));
+                    } else {
+                      navigator.push(
+                        MaterialPageRoute(
+                          builder: (BuildContext context) {
+                            return const SearchLyricMusicView();
+                          },
+                        ),
+                      );
+                    }
+                  }
+                }
+              },
+            ),
         ],
       ),
     );
@@ -410,6 +463,7 @@ class PlayerCardState extends State<PlayerCard> {
   }
 }
 
+// ignore: must_be_immutable
 class PlayerProgress extends StatefulWidget {
   Color? color;
 
