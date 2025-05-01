@@ -24,7 +24,7 @@ class _AddToOrderState extends State<AddToOrder> {
   double height = 0;
   List<String> selectedKeys = [];
 
-  final DBOrder db = DBOrder();
+  final DBOrder db = DBOrder(version: 2);
 
   @override
   void initState() {

@@ -17,7 +17,7 @@ Future<int?> getMusicPosition() async {
   return pos;
 }
 
-final db = DBOrder();
+final db = DBOrder(version: 2);
 
 class LyricsScroller extends StatefulWidget {
   const LyricsScroller({super.key});

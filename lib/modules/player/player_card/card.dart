@@ -27,7 +27,7 @@ import "package:url_launcher/url_launcher.dart";
 import "package:uuid/uuid.dart";
 
 const uuid = Uuid();
-final DBOrder db = DBOrder();
+final DBOrder db = DBOrder(version: 2);
 
 class PlayerCard extends StatefulWidget {
   const PlayerCard({super.key});

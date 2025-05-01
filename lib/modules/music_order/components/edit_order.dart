@@ -25,7 +25,7 @@ class EditMusicOrder extends StatefulWidget {
 
 class EditMusicOrderState extends State<EditMusicOrder> {
   final TextEditingController _nameController = TextEditingController();
-  final DBOrder db = DBOrder();
+  final DBOrder db = DBOrder(version: 2);
   bool get _isCreate => widget.name == "";
 
   @override

@@ -81,7 +81,7 @@ collectToMusicOrder({required context, required musicList, onConfirm}) {
 }
 
 Future<List<MusicItem>> findMusicFromNotLocalOrders({required String param}) async {
-  final DBOrder db = DBOrder();
+  final DBOrder db = DBOrder(version: 2);
   final list = await getCustomOrderList();
   List<MusicItem> musics = [];
 
@@ -103,7 +103,7 @@ Future<List<MusicItem>> findMusicFromNotLocalOrders({required String param}) asy
 }
 
 Future<List<MusicItem>> findMusicFromLocalOrders({required String param}) async {
-  final DBOrder db = DBOrder();
+  final DBOrder db = DBOrder(version: 2);
   List<MusicItem> musics = [];
 
   final dbMusics = await db.queryByParam(TableName.musicLocal, param);
@@ -122,7 +122,7 @@ Future<List<MusicItem>> findMusicFromLocalOrders({required String param}) async 
 }
 
 Future<List<MusicItem>> getUpdatedMusicList({required String tabName}) async {
-  final DBOrder db = DBOrder();
+  final DBOrder db = DBOrder(version: 2);
   List<MusicItem> newMusicList = [];
   final isWaitPlay = tabName == TableName.musicWaitPlay;
   final needOrder = isWaitPlay || tabName.startsWith("musicList_");

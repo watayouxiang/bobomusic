@@ -23,7 +23,7 @@ final botToastBuilder = BotToastInit();
 // 主题
 Color primaryColor = Colors.black;
 // 数据库
-final DBOrder db = DBOrder();
+final DBOrder db = DBOrder(version: 2);
 
 ThemeData theme = ThemeData(
   useMaterial3: true,

@@ -181,7 +181,7 @@ class SearchViewState extends State<SearchView> {
             );
 
             if (id > -1) {
-              final DBOrder db = DBOrder();
+              final DBOrder db = DBOrder(version: 2);
 
               if(!await db.isTableExists(musicListTableName)) {
                 await db.createOrderTable(musicListTableName);

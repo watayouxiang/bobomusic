@@ -6,7 +6,7 @@ import "package:bobomusic/modules/player/model.dart";
 import "package:flutter_easyloading/flutter_easyloading.dart";
 import "package:provider/provider.dart";
 
-final db = DBOrder();
+final db = DBOrder(version: 2);
 
 class LyricPreview extends StatefulWidget {
   final String lyric;

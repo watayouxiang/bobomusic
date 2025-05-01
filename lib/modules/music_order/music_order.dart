@@ -17,7 +17,7 @@ import "package:bobomusic/components/sheet/bottom_sheet.dart";
 import "package:bobomusic/origin_sdk/origin_types.dart";
 import "package:flutter_easyloading/flutter_easyloading.dart";
 
-final DBOrder db = DBOrder();
+final DBOrder db = DBOrder(version: 2);
 
 typedef OnItemHandler = void Function(
   MusicOrderItem data,

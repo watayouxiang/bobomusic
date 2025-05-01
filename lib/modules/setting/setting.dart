@@ -14,7 +14,7 @@ import "package:flutter/material.dart";
 import "package:flutter_svg/svg.dart";
 import "package:shared_preferences/shared_preferences.dart";
 
-final db = DBOrder();
+final db = DBOrder(version: 2);
 
 class SettingView extends StatefulWidget {
   const SettingView({super.key});

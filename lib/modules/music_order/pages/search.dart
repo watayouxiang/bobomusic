@@ -14,7 +14,7 @@ import "package:bobomusic/origin_sdk/service.dart";
 import "package:provider/provider.dart";
 import "package:shared_preferences/shared_preferences.dart";
 
-final db = DBOrder();
+final db = DBOrder(version: 2);
 
 class SearchOrderMusicView extends StatefulWidget {
   const SearchOrderMusicView({super.key});

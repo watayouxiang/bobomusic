@@ -15,7 +15,7 @@ import "package:flutter/material.dart";
 import "package:flutter_easyloading/flutter_easyloading.dart";
 import "package:provider/provider.dart";
 
-final DBOrder db = DBOrder();
+final DBOrder db = DBOrder(version: 2);
 
 class MusicListCommon extends StatefulWidget {
   final String tabName;

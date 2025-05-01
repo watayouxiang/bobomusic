@@ -6,7 +6,7 @@ import "package:dio/dio.dart";
 import "package:flutter/material.dart";
 
 final dio = Dio();
-final DBOrder db = DBOrder();
+final DBOrder db = DBOrder(version: 2);
 
 class MusicPlazaView extends StatefulWidget {
   const MusicPlazaView({super.key});
