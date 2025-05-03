@@ -10,7 +10,6 @@ import "package:bobomusic/modules/music_order/utils.dart";
 import "package:bobomusic/modules/player/model.dart";
 import "package:bobomusic/origin_sdk/origin_types.dart";
 import "package:bobomusic/utils/check_music_local_repeat.dart";
-import "package:bot_toast/bot_toast.dart";
 import "package:flutter/material.dart";
 import "package:flutter_easyloading/flutter_easyloading.dart";
 import "package:provider/provider.dart";
