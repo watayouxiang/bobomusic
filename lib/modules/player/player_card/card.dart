@@ -229,20 +229,14 @@ class PlayerCardState extends State<PlayerCard> {
     final isLocal = musicItem.localPath.isNotEmpty;
 
     return Container(
-      padding: const EdgeInsets.only(right: 55, left: 50),
+      padding: const EdgeInsets.only(right: 45, left: 40),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           InkWell(
             child: Transform.translate(
-              offset: const Offset(0, 1),
-              child: SvgPicture.string(
-                IconsSVG.download,
-                // ignore: deprecated_member_use
-                color: primaryColor,
-                width: 26,
-                height: 26,
-              ),
+              offset: const Offset(0, 0),
+              child: Icon(Icons.download_outlined, color: primaryColor, size: 28),
             ),
             onTap: () {
               if (isLocal) {
@@ -258,7 +252,7 @@ class PlayerCardState extends State<PlayerCard> {
           ),
           InkWell(
             child: Transform.translate(
-              offset: const Offset(0, 1),
+              offset: const Offset(0, 0),
               child: isLike
                 ? const Icon(Icons.favorite, size: 28, color: Colors.redAccent)
                 : Icon(Icons.favorite_border_rounded, color: primaryColor, size: 28),
@@ -302,8 +296,8 @@ class PlayerCardState extends State<PlayerCard> {
               IconsSVG.bilibili,
               // ignore: deprecated_member_use
               color: primaryColor,
-              width: 28,
-              height: 28,
+              width: 27,
+              height: 27,
             ),
             onTap: () {
               final biliVIDs = player.current!.id.split("_").where((e) => e.startsWith("BV")).toList();
@@ -319,7 +313,7 @@ class PlayerCardState extends State<PlayerCard> {
             InkWell(
               child: Transform.translate(
                 offset: const Offset(0, 0),
-                child: Text("词", style: TextStyle(fontSize: 22, fontWeight: FontWeight.w500, color: primaryColor))
+                child: Text("词", style: TextStyle(fontSize: 21, fontWeight: FontWeight.w500, color: primaryColor))
               ),
               onTap: () async {
                 if (context.mounted) {
