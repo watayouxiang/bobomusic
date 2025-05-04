@@ -253,7 +253,7 @@ class PlayerCardState extends State<PlayerCard> {
           ),
           LikeButton(
             size: 28,
-            animationDuration: const Duration(milliseconds: 1500),
+            animationDuration: const Duration(seconds: 1),
             circleColor: const CircleColor(start: Color(0xff00ddff), end: Color(0xff0099cc)),
             bubblesColor: const BubblesColor(
               dotPrimaryColor: Color(0xff33b5e5),
