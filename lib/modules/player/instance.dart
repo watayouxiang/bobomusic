@@ -76,7 +76,7 @@ class BBPlayer {
     var t = DateTime.now();
     audio.positionStream.listen((event) {
       var n = DateTime.now();
-      if (t.add(const Duration(seconds: 5)).isBefore(n)) {
+      if (t.add(const Duration(seconds: 1)).isBefore(n)) {
         _cachePosition();
         t = n;
       }

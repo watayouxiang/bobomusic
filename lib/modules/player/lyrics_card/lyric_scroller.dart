@@ -5,7 +5,11 @@ import "package:bobomusic/modules/player/utils.dart";
 import "package:bobomusic/origin_sdk/origin_types.dart";
 import "package:bot_toast/bot_toast.dart";
 import "package:flutter/material.dart";
-import "dart:async";
+import "package:flutter_lyric/lyric_ui/ui_netease.dart";
+import "package:flutter_lyric/lyrics_model_builder.dart";
+import "package:flutter_lyric/lyrics_reader_model.dart";
+import "package:flutter_lyric/lyrics_reader_widget.dart";
+import 'dart:async';
 import "package:provider/provider.dart";
 import "package:shared_preferences/shared_preferences.dart";
 
@@ -26,17 +30,20 @@ class LyricsScroller extends StatefulWidget {
   LyricsScrollerState createState() => LyricsScrollerState();
 }
 
-class LyricsScrollerState extends State<LyricsScroller> {
+class LyricsScrollerState extends State<LyricsScroller> with SingleTickerProviderStateMixin {
   String lyric = "";
   List<Map<String, dynamic>> parsedLyrics = [];
   int currentLine = 0;
-  final ScrollController _scrollController = ScrollController();
   Timer? _timer;
   int currentTime = 0;
+  late LyricsReaderModel lyricModel;
+  var lyricUI = UINetease();
 
   @override
   void initState() {
     super.initState();
+    // 初始化一个空的 lyricModel
+    lyricModel = LyricsModelBuilder.create().getModel();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       doScroll();
@@ -46,7 +53,6 @@ class LyricsScrollerState extends State<LyricsScroller> {
   @override
   void dispose() {
     _timer?.cancel();
-    _scrollController.dispose();
     lyric = "";
     parsedLyrics = [];
     currentLine = 0;
@@ -65,14 +71,18 @@ class LyricsScrollerState extends State<LyricsScroller> {
       setState(() {
         lyric = musicItem.lyric;
         parsedLyrics = parseLyrics(lyric);
+        lyricModel = LyricsModelBuilder.create()
+           .bindLyricToMain(lyric)
+           .getModel();
       });
     }
 
     final initialPosition = await getMusicPosition();
 
+    // 找到初始位置对应的歌词行
     for (int i = 0; i < parsedLyrics.length; i++) {
       if (parsedLyrics[i]["time"] > initialPosition) {
-        currentLine = i > 0 ? i - 1 : 0;
+        currentLine = i > 0? i - 1 : 0;
         break;
       }
       if (i == parsedLyrics.length - 1) {
@@ -81,7 +91,6 @@ class LyricsScrollerState extends State<LyricsScroller> {
     }
 
     currentTime = parsedLyrics[currentLine]["time"];
-    scrollToCenter(currentLine);
 
     if (!player.isPlaying) {
       return;
@@ -94,63 +103,24 @@ class LyricsScrollerState extends State<LyricsScroller> {
     _timer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
       setState(() {
         currentTime += 100;
-        while (currentLine < parsedLyrics.length - 1 &&
-          currentTime >= parsedLyrics[currentLine + 1]["time"]) {
-          currentLine++;
-          scrollToCenter(currentLine);
-        }
       });
     });
-  }
-
-  void scrollToCenter(int line) {
-    const itemHeight = 47.0;
-    final screenHeight = MediaQuery.of(context).size.height;
-    // 计算将当前行置于屏幕中心所需的偏移量
-    final targetOffset = line * itemHeight - (screenHeight / 2 - itemHeight / 2);
-
-    // 确保目标偏移量在有效范围内
-    final clampedOffset = targetOffset.clamp(0.0, _scrollController.position.maxScrollExtent);
-
-    _scrollController.animateTo(
-      clampedOffset,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-    );
-  }
-
-  void updateCurrentLine(int position) {
-    for (int i = 0; i < parsedLyrics.length; i++) {
-      if (parsedLyrics[i]["time"] > position) {
-        setState(() {
-          currentLine = i > 0 ? i - 1 : 0;
-        });
-        scrollToCenter(currentLine);
-        break;
-      }
-      if (i == parsedLyrics.length - 1) {
-        setState(() {
-          currentLine = i;
-        });
-        scrollToCenter(currentLine);
-      }
-    }
   }
 
   void moveLyricsBackward() {
     BotToast.showText(text: "-0.5s");
     setState(() {
       currentTime -= 500;
+      // 重新找到后退后的歌词行
       for (int i = 0; i < parsedLyrics.length; i++) {
         if (parsedLyrics[i]["time"] > currentTime) {
-          currentLine = i > 0 ? i - 1 : 0;
+          currentLine = i > 0? i - 1 : 0;
           break;
         }
         if (i == parsedLyrics.length - 1) {
           currentLine = i;
         }
       }
-      scrollToCenter(currentLine);
     });
   }
 
@@ -158,16 +128,16 @@ class LyricsScrollerState extends State<LyricsScroller> {
     BotToast.showText(text: "+0.5s");
     setState(() {
       currentTime += 500;
+      // 重新找到前进后的歌词行
       for (int i = 0; i < parsedLyrics.length; i++) {
         if (parsedLyrics[i]["time"] > currentTime) {
-          currentLine = i > 0 ? i - 1 : 0;
+          currentLine = i > 0? i - 1 : 0;
           break;
         }
         if (i == parsedLyrics.length - 1) {
           currentLine = i;
         }
       }
-      scrollToCenter(currentLine);
     });
   }
 
@@ -179,52 +149,44 @@ class LyricsScrollerState extends State<LyricsScroller> {
       children: [
         Consumer<PlayerModel>(
           builder: (context, player, child) {
-            return SafeArea(
-              child: Container(
-                padding: const EdgeInsets.only(top: 16, bottom: 100, left: 24, right: 24),
-                child: Center(
-                  child: ListView.builder(
-                    controller: _scrollController,
-                    itemCount: parsedLyrics.length,
-                    itemBuilder: (context, index) {
-                      return Container(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        alignment: Alignment.center,
-                        child: Text(
-                          parsedLyrics[index]["text"],
-                          style: TextStyle(
-                            color: index == currentLine ? primaryColor : Colors.white,
-                            fontSize: 16,
-                            fontWeight: index == currentLine ? FontWeight.bold : FontWeight.w500
-                          ),
-                        ),
-                      );
-                    },
+            return Container(
+              padding: const EdgeInsets.only(top: 20),
+              child: LyricsReader(
+                padding: const EdgeInsets.symmetric(horizontal: 40),
+                model: lyricModel,
+                position: currentTime,
+                lyricUi: lyricUI,
+                playing: player.isPlaying,
+                size: Size(double.infinity, MediaQuery.of(context).size.height - 160),
+                emptyBuilder: () => Center(
+                  child: Text(
+                    "没有歌词",
+                    style: lyricUI.getOtherMainTextStyle(),
                   ),
                 ),
-              )
+              ),
             );
-          }
+          },
         ),
         Positioned(
-          left: 80,
+          left: 50,
           bottom: 40,
           child: InkWell(
             onTap: () {
               moveLyricsBackward();
             },
             child: Icon(Icons.keyboard_double_arrow_left_rounded, color: primaryColor, size: 30),
-          )
+          ),
         ),
         Positioned(
-          right: 80,
+          right: 50,
           bottom: 40,
           child: InkWell(
             onTap: () {
               moveLyricsForward();
             },
             child: Icon(Icons.keyboard_double_arrow_right_rounded, color: primaryColor, size: 30),
-          )
+          ),
         ),
       ],
     );
