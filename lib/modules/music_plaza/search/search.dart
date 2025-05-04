@@ -62,7 +62,7 @@ class SearchViewState extends State<SearchView> {
           _searchItemList.clear();
         }
         _searchItemList.addAll(value.data);
-        _loading = true;
+        _loading = false;
       });
     });
   }

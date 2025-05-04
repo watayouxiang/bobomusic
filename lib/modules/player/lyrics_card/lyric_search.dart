@@ -1,6 +1,5 @@
 import "dart:async";
 
-import "package:bobomusic/components/sheet/bottom_sheet.dart";
 import "package:bobomusic/constants/cache_key.dart";
 import "package:bobomusic/modules/player/lyrics_card/lyric_preview.dart";
 import "package:bobomusic/origin_sdk/lyric/client.dart";
@@ -52,7 +51,7 @@ class SearchLyricMusicViewState extends State<SearchLyricMusicView> {
           _searchItemList.clear();
         }
         _searchItemList.addAll(value?.list != null ? value!.list : []);
-        _loading = true;
+        _loading = false;
       });
     });
   }
