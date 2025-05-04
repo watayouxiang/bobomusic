@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, avoid_print
 
 import "dart:async";
 import "dart:ui";
@@ -22,6 +22,7 @@ import "package:bobomusic/modules/player/player.dart";
 import "package:bobomusic/modules/player/model.dart";
 import "package:bobomusic/utils/clear_html_tags.dart";
 import "package:flutter_svg/flutter_svg.dart";
+import "package:like_button/like_button.dart";
 import "package:provider/provider.dart";
 import "package:url_launcher/url_launcher.dart";
 import "package:uuid/uuid.dart";
@@ -250,14 +251,22 @@ class PlayerCardState extends State<PlayerCard> {
               });
             },
           ),
-          InkWell(
-            child: Transform.translate(
-              offset: const Offset(0, 0),
-              child: isLike
-                ? const Icon(Icons.favorite, size: 28, color: Colors.redAccent)
-                : Icon(Icons.favorite_border_rounded, color: primaryColor, size: 28),
+          LikeButton(
+            size: 28,
+            animationDuration: const Duration(milliseconds: 1500),
+            circleColor: const CircleColor(start: Color(0xff00ddff), end: Color(0xff0099cc)),
+            bubblesColor: const BubblesColor(
+              dotPrimaryColor: Color(0xff33b5e5),
+              dotSecondaryColor: Color.fromARGB(255, 198, 121, 44),
+              dotThirdColor: Color.fromARGB(255, 204, 33, 33),
+              dotLastColor: Color.fromARGB(255, 44, 198, 80),
             ),
-            onTap: () async {
+            likeBuilder: (bool isLiked) {
+              return isLike
+                ? const Icon(Icons.favorite, size: 28, color: Colors.redAccent)
+                : Icon(Icons.favorite_border_rounded, color: primaryColor, size: 28);
+            },
+            onTap: (bool isLiked) async {
               try {
                 if (!isLike) {
                   await db.insert(
@@ -289,6 +298,8 @@ class PlayerCardState extends State<PlayerCard> {
               } catch (error) {
                 print(error);
               }
+
+              return isLike;
             },
           ),
           InkWell(
@@ -317,35 +328,44 @@ class PlayerCardState extends State<PlayerCard> {
               ),
               onTap: () async {
                 if (context.mounted) {
-                  final dbMusic = await db.queryByParam(player.current!.orderName, player.current!.playId);
+                  List<Map<String, dynamic>> dbMusic = [];
 
-                  if (dbMusic.isNotEmpty) {
-                    final musicItem = row2MusicItem(dbRow: dbMusic[0]);
-                    final navigator = Navigator.of(context);
+                  dbMusic = await db.queryByParam(player.current!.orderName, player.current!.playId);
 
-                    if (musicItem.lyric.isNotEmpty) {
-                      navigator.push(ModalBottomSheetRoute(
-                        isScrollControlled: true,
-                        builder: (context) {
-                          return LyricsCard(
-                            imageInfo: _imageInfo,
-                            imageProvider: _imageProvider,
-                            errorCoverUrl: errorCoverUrl,
-                          );
+                  if (dbMusic.isEmpty) {
+                    dbMusic = await db.queryByParam(player.current!.orderName, player.current!.id);
+                  }
+
+                  if (dbMusic.isEmpty) {
+                    BotToast.showText(text: "找不到歌曲 QAQ");
+                    return;
+                  }
+
+                  final musicItem = row2MusicItem(dbRow: dbMusic[0]);
+                  final navigator = Navigator.of(context);
+
+                  if (musicItem.lyric.isNotEmpty) {
+                    navigator.push(ModalBottomSheetRoute(
+                      isScrollControlled: true,
+                      builder: (context) {
+                        return LyricsCard(
+                          imageInfo: _imageInfo,
+                          imageProvider: _imageProvider,
+                          errorCoverUrl: errorCoverUrl,
+                        );
+                      },
+                    ));
+                  } else {
+                    navigator.push(
+                      MaterialPageRoute(
+                        builder: (BuildContext context) {
+                          return const SearchLyricMusicView();
                         },
-                      ));
-                    } else {
-                      navigator.push(
-                        MaterialPageRoute(
-                          builder: (BuildContext context) {
-                            return const SearchLyricMusicView();
-                          },
-                        ),
-                      );
-                    }
+                      ),
+                    );
                   }
                 }
-              },
+              }
             ),
         ],
       ),

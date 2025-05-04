@@ -63,7 +63,18 @@ class LyricsScrollerState extends State<LyricsScroller> with SingleTickerProvide
   Future<void> doScroll() async {
     final player = context.read<PlayerModel>();
 
-    final dbMusic = await db.queryByParam(player.current!.orderName, player.current!.playId);
+    List<Map<String, dynamic>> dbMusic = [];
+
+    dbMusic = await db.queryByParam(player.current!.orderName, player.current!.playId);
+
+    if (dbMusic.isEmpty) {
+      dbMusic = await db.queryByParam(player.current!.orderName, player.current!.id);
+    }
+
+    if (dbMusic.isEmpty) {
+      BotToast.showText(text: "找不到歌词 QAQ");
+      return;
+    }
 
     if (dbMusic.isNotEmpty) {
       final MusicItem musicItem = row2MusicItem(dbRow: dbMusic[0]);

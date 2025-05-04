@@ -84,7 +84,7 @@ class LyricsCardState extends State<LyricsCard> {
             Container(
               width: screenSize.width, // 确保整体宽度占满屏幕
               decoration: BoxDecoration(
-                color: Theme.of(context).cardColor.withValues(alpha: 0.5),
+                color: Colors.grey.withValues(alpha: 0.6),
               ),
               child: Column(
                 children: [
