@@ -245,7 +245,7 @@ class SearchViewState extends State<SearchView> {
     if (!isDelete) {
       list.insert(0, keyword);
       // 最多 40 条
-      if (list.length > 40) {
+      if (list.length > 20) {
         list.removeLast();
       }
     }
@@ -288,27 +288,25 @@ class SearchViewState extends State<SearchView> {
               _keywordController.text = keyword;
               _searchHandler(true);
             },
-            onLongPress: () {
-              openBottomSheet(
-                context,
-                [
-                  SheetItem(
-                    title: const Text("删除"),
-                    onPressed: () {
-                      updateSearchHistory(keyword, isDelete: true);
-                    },
-                  ),
-                ],
-              );
-            },
             child: Container(
               padding: const EdgeInsets.only(
                 top: 6,
                 bottom: 6,
-                left: 12,
+                left: 18,
                 right: 12,
               ),
-              child: Text(keyword, style: const TextStyle(color: Color.fromARGB(255, 146, 146, 145))),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(keyword, style: const TextStyle(fontSize: 16, color: Color.fromARGB(255, 146, 146, 145), overflow: TextOverflow.ellipsis)),
+                  InkWell(
+                    child: const Icon(Icons.delete_forever, size: 16, color: Color.fromARGB(255, 146, 146, 145)),
+                    onTap: () {
+                      updateSearchHistory(keyword, isDelete: true);
+                    },
+                  )
+                ],
+              ),
             ),
           );
         }).toList(),

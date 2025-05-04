@@ -98,7 +98,7 @@ class SearchOrderMusicViewState extends State<SearchOrderMusicView> {
     if (!isDelete) {
       list.insert(0, keyword);
       // 最多 40 条
-      if (list.length > 40) {
+      if (list.length > 20) {
         list.removeLast();
       }
     }
@@ -131,7 +131,7 @@ class SearchOrderMusicViewState extends State<SearchOrderMusicView> {
 
   Widget buildSearchHistory() {
     return Container(
-      padding: const EdgeInsets.only(left: 10, right: 10),
+      padding: const EdgeInsets.only(left: 10, right: 10, bottom: 70),
       width: double.infinity,
       child: ListView(
         children: _searchHistory.map((keyword) {
@@ -141,27 +141,25 @@ class SearchOrderMusicViewState extends State<SearchOrderMusicView> {
               _keywordController.text = keyword;
               _searchHandler(true);
             },
-            onLongPress: () {
-              openBottomSheet(
-                context,
-                [
-                  SheetItem(
-                    title: const Text("删除"),
-                    onPressed: () {
-                      updateSearchHistory(keyword, isDelete: true);
-                    },
-                  ),
-                ],
-              );
-            },
             child: Container(
               padding: const EdgeInsets.only(
                 top: 6,
                 bottom: 6,
-                left: 12,
+                left: 18,
                 right: 12,
               ),
-              child: Text(keyword, style: const TextStyle(color: Color.fromARGB(255, 146, 146, 145))),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(keyword, style: const TextStyle(fontSize: 16, color: Color.fromARGB(255, 146, 146, 145), overflow: TextOverflow.ellipsis)),
+                  InkWell(
+                    child: const Icon(Icons.delete_forever, size: 16, color: Color.fromARGB(255, 146, 146, 145)),
+                    onTap: () {
+                      updateSearchHistory(keyword, isDelete: true);
+                    },
+                  )
+                ],
+              ),
             ),
           );
         }).toList(),
