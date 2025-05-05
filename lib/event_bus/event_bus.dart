@@ -20,6 +20,7 @@ class ScanLocalListWithoutLoading {}
 class ShowLocalAction {}
 class RefreshTabList {}
 class RefreshCollectionList {}
+class RefresLyric {}
 
 class ThemeColorChanged {
   final Color newColor;

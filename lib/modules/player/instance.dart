@@ -3,6 +3,7 @@ import "dart:convert";
 
 import "package:bobomusic/constants/cache_key.dart";
 import "package:bobomusic/db/db.dart";
+import "package:bobomusic/event_bus/event_bus.dart";
 import "package:bobomusic/modules/music_order/utils.dart";
 import "package:bobomusic/modules/player/const.dart";
 import "package:bobomusic/modules/player/source.dart";
@@ -193,6 +194,7 @@ class BBPlayer {
       await audio.seek(Duration.zero);
       await play(music: current);
       await audio.play();
+      eventBus.fire(RefresLyric());
     }
     _updateLocalStorage();
   }
@@ -212,6 +214,7 @@ class BBPlayer {
       if (!audio.playing) {
         audio.play();
       }
+      eventBus.fire(RefresLyric());
       _updateLocalStorage();
       return;
     }
@@ -233,6 +236,7 @@ class BBPlayer {
         await play(music: row2MusicItem(dbRow: randomList[0]));
       }
 
+      eventBus.fire(RefresLyric());
       _updateLocalStorage();
 
       return;
@@ -266,6 +270,7 @@ class BBPlayer {
           await play(music: playerList.first);
         }
 
+        eventBus.fire(RefresLyric());
         _updateLocalStorage();
         return;
       }
@@ -291,6 +296,7 @@ class BBPlayer {
         audio.play();
       }
 
+      eventBus.fire(RefresLyric());
       _updateLocalStorage();
 
       return;
@@ -310,6 +316,7 @@ class BBPlayer {
           await play(music: playerList.first);
         }
 
+        eventBus.fire(RefresLyric());
         _updateLocalStorage();
         return;
       }
@@ -331,6 +338,7 @@ class BBPlayer {
         audio.play();
       }
 
+      eventBus.fire(RefresLyric());
       _updateLocalStorage();
     }
   }
