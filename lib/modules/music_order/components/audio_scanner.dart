@@ -5,19 +5,21 @@ import "package:audio_metadata_reader/audio_metadata_reader.dart";
 
 class AudioScanner {
   /// 扫描音频文件
-  static Future<List<AudioFile>> scanAudios() async {
-    return compute(_scanAudiosInIsolate, null);
+  static Future<(List<AudioFile>, List<String>)> scanAudios() async {
+    List<String> failedMusics = [];
+    final results = await compute(_scanAudiosInIsolate, failedMusics);
+    return (results.$1, results.$2);
   }
 
-  static Future<List<AudioFile>> _scanAudiosInIsolate(_) async {
+  static Future<(List<AudioFile>, List<String>)> _scanAudiosInIsolate(List<String> failedMusics) async {
     final List<AudioFile> results = [];
     final List<Directory> scanDirs = await _getScanDirectories();
 
     for (final dir in scanDirs) {
-      await _scanDirectory(dir, results);
+      await _scanDirectory(dir, results, failedMusics);
     }
 
-    return results;
+    return (results, failedMusics);
   }
 
   /// 获取需要扫描的目录
@@ -28,20 +30,21 @@ class AudioScanner {
 
   /// 递归扫描目录
   static Future<void> _scanDirectory(
-    Directory directory,
-    List<AudioFile> results
-  ) async {
+      Directory directory,
+      List<AudioFile> results,
+      List<String> failedMusics
+      ) async {
     try {
       final entities = directory.listSync(recursive: false);
       for (final entity in entities) {
         if (entity is Directory) {
           try {
-            await _scanDirectory(entity, results);
+            await _scanDirectory(entity, results, failedMusics);
           } catch (e) {
             print("无法访问目录: ${entity.path} - $e");
           }
         } else if (entity is File && _isAudioFile(entity.path)) {
-          final metadata = await _readMetadata(entity);
+          final metadata = await _readMetadata(entity, failedMusics);
           if (metadata != null) {
             results.add(metadata);
           }
@@ -61,7 +64,7 @@ class AudioScanner {
   }
 
   /// 读取音频元数据
-  static Future<AudioFile?> _readMetadata(File file) async {
+  static Future<AudioFile?> _readMetadata(File file, List<String> failedMusics) async {
     try {
       final metadata = readMetadata(file, getImage: false);
       return AudioFile(
@@ -72,6 +75,7 @@ class AudioScanner {
       );
     } catch (e) {
       print("读取元数据失败: ${file.path} - $e");
+      failedMusics.add(file.path);
       return null;
     }
   }

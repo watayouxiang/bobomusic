@@ -33,23 +33,20 @@ class CustomDialog extends StatelessWidget {
               child: Image.asset(path.join("assets", "images", "gif_cat_dog.gif"))
             ),
           ),
-          // 标题和关闭按钮区域
+          // 标题区域
           if (title != null)
             Padding(
-              padding: const EdgeInsets.only(left: 24, bottom: 6),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Expanded(child: Text(
-                    title!,
-                    style: TextStyle(
-                      color: Theme.of(context).primaryColor,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  )),
-                ],
-              ),
+              padding: const EdgeInsets.only(left: 24, bottom: 6, right: 24),
+              child: Center(
+                child: Text(
+                  title!,
+                  style: TextStyle(
+                    color: Theme.of(context).primaryColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+              )
             ),
           // 内容区域
           Padding(

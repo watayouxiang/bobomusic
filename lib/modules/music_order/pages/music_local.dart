@@ -1,5 +1,8 @@
+// ignore_for_file: use_build_context_synchronously
+
 import "dart:async";
 
+import "package:bobomusic/components/custom_dialog/custom_dialog.dart";
 import "package:bobomusic/components/empty_page/empty_page.dart";
 import "package:bobomusic/components/music_list_tile/music_list_tile.dart";
 import "package:bobomusic/components/sheet/bottom_sheet.dart";
@@ -139,7 +142,7 @@ class MusicLocalState extends State<MusicLocal> {
   }
 
   Future<void> scanLocalMusics0() async {
-    final audioFiles = await AudioScanner.scanAudios();
+    final (audioFiles, failedMusics) = await AudioScanner.scanAudios();
 
     if (audioFiles.isNotEmpty) {
       final List<MusicItem> newMusicList = [];
@@ -164,9 +167,49 @@ class MusicLocalState extends State<MusicLocal> {
 
       final updatedList = await getUpdatedMusicList(tabName: TableName.musicLocal);
 
-      setState(() {
-        musicList = updatedList;
-      });
+      if (failedMusics.isEmpty) {
+        setState(() {
+          musicList = updatedList;
+        });
+
+        return;
+      }
+
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return CustomDialog(
+            title: "以下歌曲扫描失败",
+            body: SizedBox(
+              height: MediaQuery.of(context).size.height / 4,
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: failedMusics.asMap().entries.map((entry) {
+                    return Text("${entry.key + 1}. ${entry.value}", style: const TextStyle(color: Colors.grey, fontSize: 10));
+                  }).toList(),
+                ),
+              )
+            ),
+            onConfirm: () async {
+              setState(() {
+                musicList = updatedList;
+              });
+
+              if (context.mounted) {
+                Navigator.of(context).pop();
+              }
+            },
+            onCancel: () {
+              setState(() {
+                musicList = updatedList;
+              });
+
+              Navigator.of(context).pop();
+            },
+          );
+        },
+      );
     } else {
       BotToast.showText(text: "本地没有音乐或者系统拒绝访问 QAQ", duration: const Duration(seconds: 3));
     }
