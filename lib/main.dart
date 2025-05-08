@@ -1,4 +1,3 @@
-import "dart:async";
 import "dart:io";
 
 import "package:audio_service/audio_service.dart";
@@ -6,7 +5,6 @@ import "package:bobomusic/db/db.dart";
 import "package:bobomusic/event_bus/event_bus.dart";
 import "package:bobomusic/modules/download/model.dart";
 import "package:bobomusic/utils/get_cache_color.dart";
-import "package:bobomusic/utils/update_version.dart";
 import "package:bobomusic/utils/window_manage.dart";
 import "package:bot_toast/bot_toast.dart";
 import "package:flutter/material.dart";
@@ -142,10 +140,6 @@ class MyAppState extends State<MyApp> {
           primaryColor: primaryColor,
         );
       });
-    });
-
-    Timer(const Duration(seconds: 1), () {
-      updateAppVersion(context, showToast: false);
     });
   }
 
