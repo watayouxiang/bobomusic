@@ -16,8 +16,9 @@ List<Map<String, dynamic>> parseLyrics(String lyrics) {
   List<Map<String, dynamic>> parsedLyrics = [];
   List<String> lines = lyrics.split('\n');
   for (String line in lines) {
+    final newLine = line.replaceAll("&apos;", "'");
     RegExp regExp = RegExp(r'\[(\d{2}):(\d{2})\.(\d{2})\](.*)');
-    Match? match = regExp.firstMatch(line);
+    Match? match = regExp.firstMatch(newLine);
     if (match != null) {
       int minutes = int.parse(match.group(1)!);
       int seconds = int.parse(match.group(2)!);

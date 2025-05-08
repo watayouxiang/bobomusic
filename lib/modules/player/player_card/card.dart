@@ -334,8 +334,8 @@ class PlayerCardState extends State<PlayerCard> {
                 IconsSVG.lyric,
                 // ignore: deprecated_member_use
                 color: primaryColor,
-                width: 25,
-                height: 25,
+                width: 24,
+                height: 24,
               ),
               onTap: () async {
                 if (context.mounted) {

@@ -144,7 +144,13 @@ class LyricClient {
     if (response.statusCode == 200) {
       EasyLoading.dismiss();
       final data = response.data["data"];
-      return SongData.fromJson(data);
+
+      if(data["total"] == 0) {
+        BotToast.showText(text: "没有歌曲，歌词服务商可能出错了");
+        return null;
+      } else {
+        return SongData.fromJson(data);
+      }
     } else {
       EasyLoading.dismiss();
       BotToast.showText(text: "歌曲查询失败");
