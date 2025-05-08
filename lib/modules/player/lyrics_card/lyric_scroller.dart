@@ -48,7 +48,7 @@ class LyricsScrollerState extends State<LyricsScroller> with SingleTickerProvide
   void initState() {
     super.initState();
 
-    eventBus.on<RefresLyric>().listen((event) {
+    eventBus.on<RefresPlayerCard>().listen((event) {
       doScroll();
     });
 

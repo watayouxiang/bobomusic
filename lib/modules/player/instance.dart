@@ -177,11 +177,11 @@ class BBPlayer {
         await play(music: row2MusicItem(dbRow: lastMusic[0]));
       } else {
         BotToast.showText(text: "找不到上一曲。当前歌曲所在歌单：${current!.orderName}", duration: const Duration(seconds: 4));
-
         return;
       }
     }
 
+    eventBus.fire(RefresPlayerCard());
     _updateLocalStorage();
   }
 
@@ -194,7 +194,7 @@ class BBPlayer {
       await audio.seek(Duration.zero);
       await play(music: current);
       await audio.play();
-      eventBus.fire(RefresLyric());
+      eventBus.fire(RefresPlayerCard());
     }
     _updateLocalStorage();
   }
@@ -214,7 +214,7 @@ class BBPlayer {
       if (!audio.playing) {
         audio.play();
       }
-      eventBus.fire(RefresLyric());
+      eventBus.fire(RefresPlayerCard());
       _updateLocalStorage();
       return;
     }
@@ -236,7 +236,7 @@ class BBPlayer {
         await play(music: row2MusicItem(dbRow: randomList[0]));
       }
 
-      eventBus.fire(RefresLyric());
+      eventBus.fire(RefresPlayerCard());
       _updateLocalStorage();
 
       return;
@@ -270,7 +270,7 @@ class BBPlayer {
           await play(music: playerList.first);
         }
 
-        eventBus.fire(RefresLyric());
+        eventBus.fire(RefresPlayerCard());
         _updateLocalStorage();
         return;
       }
@@ -296,7 +296,7 @@ class BBPlayer {
         audio.play();
       }
 
-      eventBus.fire(RefresLyric());
+      eventBus.fire(RefresPlayerCard());
       _updateLocalStorage();
 
       return;
@@ -316,7 +316,7 @@ class BBPlayer {
           await play(music: playerList.first);
         }
 
-        eventBus.fire(RefresLyric());
+        eventBus.fire(RefresPlayerCard());
         _updateLocalStorage();
         return;
       }
@@ -338,7 +338,7 @@ class BBPlayer {
         audio.play();
       }
 
-      eventBus.fire(RefresLyric());
+      eventBus.fire(RefresPlayerCard());
       _updateLocalStorage();
     }
   }

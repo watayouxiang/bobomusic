@@ -50,6 +50,10 @@ class PlayerCardState extends State<PlayerCard> {
     super.initState();
     _imageProvider = NetworkImage(coverUrl);
 
+    eventBus.on<RefresPlayerCard>().listen((event) {
+      _initState();
+    });
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initState();
       _loadImage();
@@ -64,6 +68,10 @@ class PlayerCardState extends State<PlayerCard> {
       if (dbMusics.isNotEmpty) {
         setState(() {
           isLike = true;
+        });
+      } else {
+        setState(() {
+          isLike = false;
         });
       }
     } catch (error) {
@@ -230,7 +238,7 @@ class PlayerCardState extends State<PlayerCard> {
     final isLocal = musicItem.localPath.isNotEmpty;
 
     return Container(
-      padding: const EdgeInsets.only(right: 45, left: 40),
+      padding: const EdgeInsets.only(left: 40, right: 40),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
@@ -322,9 +330,12 @@ class PlayerCardState extends State<PlayerCard> {
           ),
           if (player.current!.orderName.isNotEmpty)
             InkWell(
-              child: Transform.translate(
-                offset: const Offset(0, 0),
-                child: Text("词", style: TextStyle(fontSize: 21, fontWeight: FontWeight.w500, color: primaryColor))
+              child: SvgPicture.string(
+                IconsSVG.lyric,
+                // ignore: deprecated_member_use
+                color: primaryColor,
+                width: 25,
+                height: 25,
               ),
               onTap: () async {
                 if (context.mounted) {

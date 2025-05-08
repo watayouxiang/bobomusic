@@ -26,9 +26,6 @@ class LyricsCardState extends State<LyricsCard> {
   @override
   void initState() {
     super.initState();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-    });
   }
 
   @override
