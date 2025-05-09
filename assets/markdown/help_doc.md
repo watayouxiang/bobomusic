@@ -28,17 +28,24 @@
 
 ## 二、在广场搜索歌曲播放或添加到歌单
 
-### 1.广场自带部分歌单合集
+### 1.广场有热门歌手以及你收藏的合集
 
 ![](assets/images/plaza.png)
+![](assets/images/plaza_collections.png)
 
 ### 2.广场顶部搜索框搜索互联网歌曲
 
 > 搜索案例：周深合集，maroon5 合集
 
-![](assets/images/plaza_search.png)
+如果不是合集则可以直接播放
 
-### 3.搜索歌曲合集后添加到歌单保存
+![](assets/images/plaza_music_play.png)
+
+> 如果是合集则可以查看或者收藏
+
+![](assets/images/long_press_collection.png)
+
+> 查看合集时可以将所有歌曲添加到歌单或者待播放列表
 
 ![](assets/images/add_to_order.png)
 
@@ -47,6 +54,8 @@
 ## 三、播放器
 
 ### 1.点击播放器可以进入播放页面
+
+> 播放器进度条上方的几个按钮分别是：下载、喜欢、去 bilibili 播放该音乐视频、匹配歌词
 
 ![](assets/images/player_card.png)
 

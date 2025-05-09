@@ -57,8 +57,11 @@ class MarkdownRendererState extends State<MarkdownRenderer> {
     if (uri.startsWith("http")) {
       return Image.network(uri, fit: BoxFit.cover);
     }
-    
-    return Image.asset(uri, fit: BoxFit.cover);
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(10),
+      child: Image.asset(uri, fit: BoxFit.cover),
+    );
   }
 
   @override
