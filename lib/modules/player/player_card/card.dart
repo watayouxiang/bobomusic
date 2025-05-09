@@ -315,8 +315,8 @@ class PlayerCardState extends State<PlayerCard> {
               IconsSVG.bilibili,
               // ignore: deprecated_member_use
               color: primaryColor,
-              width: 27,
-              height: 27,
+              width: 28,
+              height: 28,
             ),
             onTap: () {
               final biliVIDs = player.current!.id.split("_").where((e) => e.startsWith("BV")).toList();
@@ -334,8 +334,8 @@ class PlayerCardState extends State<PlayerCard> {
                 IconsSVG.lyric,
                 // ignore: deprecated_member_use
                 color: primaryColor,
-                width: 24,
-                height: 24,
+                width: 28,
+                height: 28,
               ),
               onTap: () async {
                 if (context.mounted) {
