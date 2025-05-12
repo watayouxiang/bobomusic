@@ -56,7 +56,7 @@ class SingerRowViewState extends State<SingerRow> {
     EasyLoading.dismiss();
 
     final itemCounts = screenWidth ~/ 60;
-    list = list.sublist(0, itemCounts);
+    list = list.sublist(0, itemCounts > list.length ? list.length : itemCounts);
     List<Widget> singerViewList = [];
 
     for (var it in list) {

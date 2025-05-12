@@ -212,7 +212,6 @@ class LyricsScrollerState extends State<LyricsScroller> with SingleTickerProvide
 
   @override
   Widget build(BuildContext context) {
-    final primaryColor = Theme.of(context).primaryColor;
     final player = context.read<PlayerModel>();
 
     return Stack(
@@ -237,42 +236,40 @@ class LyricsScrollerState extends State<LyricsScroller> with SingleTickerProvide
             );
           },
         ),
+        // 优化后的底部控制区域布局
         Positioned(
           bottom: 30,
+          left: 0,
+          right: 0,
           child: Container(
             height: 80,
-            padding: const EdgeInsets.only(left: 40, right: 40),
-            width: MediaQuery.of(context).size.width,
+            padding: EdgeInsets.symmetric(
+              horizontal: MediaQuery.of(context).size.width * 0.05, // 使用屏幕宽度的百分比
+            ),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.spaceAround, // 改用 spaceAround 以获得更均匀的分布
               children: [
-                InkWell(
+                // 后退按钮 - 保持原有功能
+                buildIconButton(
+                  icon: Icons.keyboard_double_arrow_left_outlined,
                   onTap: () {
                     if (player.current!.lyric.isEmpty) {
                       BotToast.showText(text: "没有歌词");
                       return;
                     }
-
                     moveLyricsBackward();
                   },
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    padding: const EdgeInsets.only(right: 2),
-                    decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.all(Radius.circular(50)),
-                      color: primaryColor,
-                    ),
-                    child: const Icon(Icons.keyboard_double_arrow_left_outlined, color: Colors.white70, size: 30),
-                  ),
+                  width: getButtonWidth(context, 0.1), // 使用自适应宽度
                 ),
-                InkWell(
+
+                // 删除按钮 - 保持原有功能
+                buildIconButton(
+                  icon: Icons.delete_forever_rounded,
                   onTap: () {
                     if (player.current!.lyric.isEmpty) {
                       BotToast.showText(text: "没有歌词");
                       return;
                     }
-
                     showDialog(
                       context: context,
                       builder: (BuildContext context) {
@@ -288,41 +285,58 @@ class LyricsScrollerState extends State<LyricsScroller> with SingleTickerProvide
                       },
                     );
                   },
-                  child: Container(
-                    width: 50,
-                    height: 50,
-                    decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.all(Radius.circular(50)),
-                      color: primaryColor,
-                    ),
-                    child: const  Icon(Icons.delete_forever_rounded, color: Colors.white70, size: 30),
-                  ),
+                  width: getButtonWidth(context, 0.12), // 中间按钮稍大一些
+                  size: 32,
                 ),
-                InkWell(
+
+                // 前进按钮 - 保持原有功能
+                buildIconButton(
+                  icon: Icons.keyboard_double_arrow_right_outlined,
                   onTap: () {
                     if (player.current!.lyric.isEmpty) {
                       BotToast.showText(text: "没有歌词");
                       return;
                     }
-
                     moveLyricsForward();
                   },
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    padding: const EdgeInsets.only(left: 2),
-                    decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.all(Radius.circular(50)),
-                      color: primaryColor,
-                    ),
-                    child: const Icon(Icons.keyboard_double_arrow_right_outlined, color: Colors.white70, size: 30),
-                  ),
+                  width: getButtonWidth(context, 0.1), // 使用自适应宽度
                 ),
               ],
             ),
-          )
-        ),
+          ),
+        )
       ],
+    );
+  }
+
+  // 辅助方法：获取按钮的自适应宽度
+  double getButtonWidth(BuildContext context, double percentage) {
+    final screenWidth = MediaQuery.of(context).size.width - 80;
+    return screenWidth * percentage;
+  }
+
+  // 辅助方法：构建图标按钮
+  Widget buildIconButton({
+    required IconData icon,
+    required VoidCallback onTap,
+    double width = 50,
+    double size = 30,
+  }) {
+    final primaryColor = Theme.of(context).primaryColor;
+
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        width: width,
+        height: width, // 使用相同的宽高比
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(width / 2),
+          color: primaryColor,
+        ),
+        child: Center(
+          child: Icon(icon, color: Colors.white70, size: size),
+        ),
+      ),
     );
   }
 }

@@ -156,6 +156,7 @@ class CollectionViewState extends State<Collection> {
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
+    final isLandscape = screenSize.width > screenSize.height;
     final emptyPageHeight = MediaQuery.of(context).size.height - 400;
     final imageWidth = screenSize.width ~/ 2;
     final restHeight = emptyPageHeight - imageWidth - (20 + 32 + 30 + 48 + 30); // 20 文字高度, 32 按钮 top, 30 image bottom, 48 按钮 height, 30 凭感觉减去的高度
@@ -173,13 +174,15 @@ class CollectionViewState extends State<Collection> {
                 imageBottomPadding: 30,
                 text: "你还没有收藏的合集",
                 customImage: SizedBox(
-                  width: screenSize.width / 2,
+                  width: screenSize.width / 2 - (isLandscape ? 80 : 0),
                   child: ClipRRect(
                     borderRadius: const BorderRadius.all(Radius.circular(16)),
                     child: Image.asset(path.join("assets", "images", "space_exploration.png"))
                   ),
                 ),
                 btns: [
+                  if(isLandscape)
+                    const SizedBox(height: 40),
                   TextButton(
                     style: TextButton.styleFrom(
                       backgroundColor: Theme.of(context).primaryColor,
