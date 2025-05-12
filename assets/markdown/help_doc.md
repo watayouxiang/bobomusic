@@ -37,7 +37,7 @@
 
 > 搜索案例：周深合集，maroon5 合集
 
-如果不是合集则可以直接播放
+> 如果不是合集则可以直接播放
 
 ![](assets/images/plaza_music_play.png)
 

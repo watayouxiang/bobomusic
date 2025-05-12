@@ -58,9 +58,16 @@ class MarkdownRendererState extends State<MarkdownRenderer> {
       return Image.network(uri, fit: BoxFit.cover);
     }
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(10),
-      child: Image.asset(uri, fit: BoxFit.cover),
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        color: const Color.fromARGB(255, 226, 226, 226),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: Image.asset(uri, fit: BoxFit.cover),
+      ),
     );
   }
 
