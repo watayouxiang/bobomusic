@@ -1,3 +1,5 @@
+import "dart:math";
+
 import "package:bobomusic/components/empty_page/empty_page.dart";
 import "package:bobomusic/components/title_area/title_area.dart";
 import "package:bobomusic/db/db.dart";
@@ -174,7 +176,7 @@ class CollectionViewState extends State<Collection> {
                 imageBottomPadding: 30,
                 text: "你还没有收藏的合集",
                 customImage: SizedBox(
-                  width: screenSize.width / 2 - (isLandscape ? 80 : 0),
+                  width: min(screenSize.width / 2, screenSize.height / 2) - (isLandscape ? 80 : 0),
                   child: ClipRRect(
                     borderRadius: const BorderRadius.all(Radius.circular(16)),
                     child: Image.asset(path.join("assets", "images", "space_exploration.png"))

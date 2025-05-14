@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously, avoid_print
+// ignore_for_file: use_build_context_synchronously, avoid_print, deprecated_member_use
 
 import "dart:async";
 import "dart:ui";
@@ -9,8 +9,7 @@ import "package:bobomusic/constants/covers.dart";
 import "package:bobomusic/db/db.dart";
 import "package:bobomusic/event_bus/event_bus.dart";
 import "package:bobomusic/modules/download/model.dart";
-import "package:bobomusic/modules/player/lyrics_card/lyric_search.dart";
-import "package:bobomusic/modules/player/lyrics_card/lyrics.dart";
+import "package:bobomusic/modules/player/lyrics_card/lyric_scroller.dart";
 import "package:bobomusic/modules/player/player_card/vinyl_record.dart";
 import "package:bobomusic/modules/player/utils.dart";
 import "package:bobomusic/origin_sdk/origin_types.dart";
@@ -44,11 +43,14 @@ class PlayerCardState extends State<PlayerCard> {
   ImageProvider? _imageProvider;
   ImageStream? _imageStream;
   ImageInfo? _imageInfo;
+  late PageController _pageController;
+  int _currentPage = 0;
 
   @override
   void initState() {
     super.initState();
     _imageProvider = NetworkImage(coverUrl);
+    _pageController = PageController(initialPage: _currentPage);
 
     eventBus.on<RefresPlayerCard>().listen((event) {
       _initState();
@@ -87,6 +89,7 @@ class PlayerCardState extends State<PlayerCard> {
         onError: (dynamic exception, StackTrace? stackTrace) {},
       ),
     );
+    _pageController.dispose();
     super.dispose();
   }
 
@@ -116,8 +119,7 @@ class PlayerCardState extends State<PlayerCard> {
           InkWell(
             child: Align(
               alignment: Alignment.centerLeft,
-              child: Icon(Icons.keyboard_arrow_down,
-                  color: primaryColor, size: 30),
+              child: Icon(Icons.keyboard_arrow_down, color: primaryColor, size: 30),
             ),
             onTap: () {
               Navigator.of(context).pop();
@@ -195,7 +197,6 @@ class PlayerCardState extends State<PlayerCard> {
 
       if (res) {
         showDialog(
-          // ignore: use_build_context_synchronously
           context: context,
           builder: (ctx) => Container(
             alignment: Alignment.bottomCenter,
@@ -238,7 +239,7 @@ class PlayerCardState extends State<PlayerCard> {
     final isLocal = musicItem.localPath.isNotEmpty;
 
     return Container(
-      padding: const EdgeInsets.only(left: 40, right: 40),
+      padding: const EdgeInsets.only(left: 42, right: 40),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
@@ -313,7 +314,6 @@ class PlayerCardState extends State<PlayerCard> {
           InkWell(
             child: SvgPicture.string(
               IconsSVG.bilibili,
-              // ignore: deprecated_member_use
               color: primaryColor,
               width: 28,
               height: 28,
@@ -328,56 +328,6 @@ class PlayerCardState extends State<PlayerCard> {
               }
             },
           ),
-          if (player.current!.orderName.isNotEmpty)
-            InkWell(
-              child: SvgPicture.string(
-                IconsSVG.lyric,
-                // ignore: deprecated_member_use
-                color: primaryColor,
-                width: 24,
-                height: 24,
-              ),
-              onTap: () async {
-                if (context.mounted) {
-                  List<Map<String, dynamic>> dbMusic = [];
-
-                  dbMusic = await db.queryByParam(player.current!.orderName, player.current!.playId);
-
-                  if (dbMusic.isEmpty) {
-                    dbMusic = await db.queryByParam(player.current!.orderName, player.current!.id);
-                  }
-
-                  if (dbMusic.isEmpty) {
-                    BotToast.showText(text: "找不到歌曲 QAQ");
-                    return;
-                  }
-
-                  final musicItem = row2MusicItem(dbRow: dbMusic[0]);
-                  final navigator = Navigator.of(context);
-
-                  if (musicItem.lyric.isNotEmpty) {
-                    navigator.push(ModalBottomSheetRoute(
-                      isScrollControlled: true,
-                      builder: (context) {
-                        return LyricsCard(
-                          imageInfo: _imageInfo,
-                          imageProvider: _imageProvider,
-                          errorCoverUrl: errorCoverUrl,
-                        );
-                      },
-                    ));
-                  } else {
-                    navigator.push(
-                      MaterialPageRoute(
-                        builder: (BuildContext context) {
-                          return const SearchLyricMusicView();
-                        },
-                      ),
-                    );
-                  }
-                }
-              }
-            ),
         ],
       ),
     );
@@ -406,6 +356,30 @@ class PlayerCardState extends State<PlayerCard> {
     );
   }
 
+  // 构建轮播组件内的指示器
+  Widget _buildCarouselIndicator(Color primaryColor) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: List.generate(
+          2, // 总页数
+          (index) => Container(
+            width: 8,
+            height: 8,
+            margin: const EdgeInsets.symmetric(horizontal: 4),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: index == _currentPage
+                  ? primaryColor
+                  : primaryColor.withOpacity(0.3),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
@@ -431,29 +405,64 @@ class PlayerCardState extends State<PlayerCard> {
               ),
             ),
             Container(
-              width: screenSize.width, // 确保整体宽度占满屏幕
+              width: screenSize.width,
               decoration: BoxDecoration(
-                color: Theme.of(context).cardColor.withValues(alpha: 0.5),
+                color: Theme.of(context).cardColor.withOpacity(0.5),
               ),
               padding: EdgeInsets.only(bottom: isLandscape ? 30 : 0),
               child: Column(
                 children: [
+                  // 顶部导航栏
                   _buildTopBar(primaryColor),
+
                   Expanded(
                     child: isLandscape
-                      ? Row(
+                      ? // 横屏模式：左右布局
+                        Row(
                           children: [
-                            Expanded(
-                              child: _buildRecordWidget(),
+                            // 左侧轮播图区域
+                            SizedBox(
+                              height: screenSize.height * 0.9,
+                              width: screenSize.width * 0.6, // 占60%宽度
+                              child: Column(
+                                children: [
+                                  // 轮播组件内的指示器
+                                  _buildCarouselIndicator(primaryColor),
+                                  Expanded(
+                                    child: PageView(
+                                      controller: _pageController,
+                                      onPageChanged: (index) => setState(() => _currentPage = index),
+                                      children: [
+                                        Column(
+                                          children: [
+                                            _buildRecordWidget(),
+                                          ],
+                                        ),
+                                        const Column(
+                                          children: [
+                                            Expanded(
+                                              child: LyricsScroller(),
+                                            )
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
+
+                            // 右侧区域（操作按钮 + 进度条 + 控制按钮）
                             Expanded(
-                              child: SingleChildScrollView(
+                              child: Container(
+                                padding: const EdgeInsets.all(20),
                                 child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     _buildMusicInfo(primaryColor),
                                     const SizedBox(height: 30),
                                     _buildActionButtons(primaryColor),
-                                    const SizedBox(height: 20),
+                                    const SizedBox(height: 30),
                                     PlayerProgress(color: primaryColor),
                                     const SizedBox(height: 30),
                                     _buildControlButtons(primaryColor),
@@ -463,19 +472,44 @@ class PlayerCardState extends State<PlayerCard> {
                             ),
                           ],
                         )
-                      : SingleChildScrollView(
-                          child: Column(
-                            children: [
-                              _buildRecordWidget(),
-                              _buildMusicInfo(primaryColor),
-                              const SizedBox(height: 30),
-                              _buildActionButtons(primaryColor),
-                              const SizedBox(height: 20),
-                              PlayerProgress(color: primaryColor),
-                              const SizedBox(height: 30),
-                              _buildControlButtons(primaryColor),
-                            ],
-                          ),
+                      : // 竖屏模式：垂直布局
+                        Column(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                children: [
+                                  // 轮播组件内的指示器
+                                  _buildCarouselIndicator(primaryColor),
+                                  Expanded(
+                                    child: PageView(
+                                      controller: _pageController,
+                                      onPageChanged: (index) => setState(() => _currentPage = index),
+                                      children: [
+                                        Column(
+                                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                          children: [
+                                            _buildRecordWidget(),
+                                            _buildMusicInfo(primaryColor),
+                                            _buildActionButtons(primaryColor),
+                                          ],
+                                        ),
+                                        const Column(
+                                          children: [
+                                            Expanded(
+                                              child: LyricsScroller(),
+                                            )
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            PlayerProgress(color: primaryColor),
+                            _buildControlButtons(primaryColor),
+                            const SizedBox(height: 60),
+                          ],
                         ),
                   ),
                 ],
@@ -682,7 +716,7 @@ class CustomTrackShape extends RoundedRectSliderTrackShape {
     canvas.drawRect(activeTrackRect, activeTrackPaint);
 
     final Paint inactiveTrackPaint = Paint()
-      ..color = primaryColor.withValues(alpha: 0.7)
+      ..color = primaryColor.withOpacity(0.7)
       ..style = PaintingStyle.fill;
     final Rect inactiveTrackRect = Rect.fromLTWH(
       thumbX,

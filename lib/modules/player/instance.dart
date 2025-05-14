@@ -139,6 +139,8 @@ class BBPlayer {
     if (current!.duration == 0 && audio.duration != null) {
       await db.update(current!.orderName, musicItem2Row(music: current!.copyWith(duration: audio.duration!.inSeconds)));
     }
+
+    eventBus.fire(RefresPlayerCard());
     _updateLocalStorage();
   }
 

@@ -4,6 +4,8 @@ import "package:bobomusic/components/custom_dialog/custom_dialog.dart";
 import "package:bobomusic/constants/cache_key.dart";
 import "package:bobomusic/db/db.dart";
 import "package:bobomusic/event_bus/event_bus.dart";
+import "package:bobomusic/main.dart";
+import "package:bobomusic/modules/player/lyrics_card/lyric_search.dart";
 import "package:bobomusic/modules/player/model.dart";
 import "package:bobomusic/modules/player/utils.dart";
 import "package:bobomusic/origin_sdk/origin_types.dart";
@@ -49,7 +51,7 @@ class LyricsScrollerState extends State<LyricsScroller> with SingleTickerProvide
     super.initState();
 
     eventBus.on<RefresPlayerCard>().listen((event) {
-      doScroll();
+      doScroll(true);
     });
 
     // 初始化一个空的 lyricModel
@@ -78,12 +80,16 @@ class LyricsScrollerState extends State<LyricsScroller> with SingleTickerProvide
     }
   }
 
-  Future<void> doScroll() async {
+  Future<void> doScroll([bool? showTip = false]) async {
     if (!context.mounted || !mounted) {
       return;
     }
 
     final player = context.read<PlayerModel>();
+
+    if(player.current!.orderName.isEmpty) {
+      return;
+    }
 
     List<Map<String, dynamic>> dbMusic = [];
 
@@ -95,7 +101,11 @@ class LyricsScrollerState extends State<LyricsScroller> with SingleTickerProvide
 
     if (dbMusic.isEmpty) {
       resetState();
-      BotToast.showText(text: "找不到歌词 QAQ");
+
+      if(showTip != null && showTip) {
+        BotToast.showText(text: "找不到歌词 QAQ");
+      }
+
       return;
     }
 
@@ -104,7 +114,11 @@ class LyricsScrollerState extends State<LyricsScroller> with SingleTickerProvide
 
       if (musicItem.lyric.isEmpty) {
         resetState();
-        BotToast.showText(text: "找不到歌词 QAQ");
+
+        if(showTip != null && showTip) {
+          BotToast.showText(text: "找不到歌词 QAQ");
+        }
+
         return;
       }
 
@@ -219,7 +233,7 @@ class LyricsScrollerState extends State<LyricsScroller> with SingleTickerProvide
         Consumer<PlayerModel>(
           builder: (context, player, child) {
             return Container(
-              padding: const EdgeInsets.only(top: 20, bottom: 130),
+              padding: const EdgeInsets.only(left: 20, right: 20, bottom: 60),
               child: lyric.isNotEmpty ? LyricsReader(
                 padding: const EdgeInsets.symmetric(horizontal: 40),
                 model: lyricModel,
@@ -228,21 +242,52 @@ class LyricsScrollerState extends State<LyricsScroller> with SingleTickerProvide
                 playing: player.isPlaying,
                 size: Size(double.infinity, MediaQuery.of(context).size.height - 160),
               ) : Center(
-                child: Text(
-                  "没有歌词",
-                  style: lyricUI.getOtherMainTextStyle(),
-                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "没有歌词",
+                      style: TextStyle(color: primaryColor, fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 30),
+                    if(player.current!.orderName.isEmpty)
+                        Text(
+                          "当前歌曲不在任何歌单或者合集内，不支持匹配歌词",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: primaryColor, fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                    if(player.current!.orderName.isNotEmpty)
+                      TextButton(
+                        style: TextButton.styleFrom(
+                          backgroundColor: Theme.of(context).primaryColor,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.only(left: 32, right: 32),
+                          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(4)))
+                        ),
+                        onPressed: () async {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (BuildContext context) {
+                                return const SearchLyricMusicView();
+                              },
+                            ),
+                          );
+                        },
+                        child: const Text("去匹配歌词"),
+                      ),
+                  ],
+                )
               ),
             );
           },
         ),
         // 优化后的底部控制区域布局
         Positioned(
-          bottom: 30,
+          bottom: 0,
           left: 0,
           right: 0,
           child: Container(
-            height: 80,
+            height: 50,
             padding: EdgeInsets.symmetric(
               horizontal: MediaQuery.of(context).size.width * 0.05, // 使用屏幕宽度的百分比
             ),
@@ -285,8 +330,7 @@ class LyricsScrollerState extends State<LyricsScroller> with SingleTickerProvide
                       },
                     );
                   },
-                  width: getButtonWidth(context, 0.12), // 中间按钮稍大一些
-                  size: 32,
+                  width: getButtonWidth(context, 0.1), // 中间按钮稍大一些
                 ),
 
                 // 前进按钮 - 保持原有功能
@@ -326,15 +370,11 @@ class LyricsScrollerState extends State<LyricsScroller> with SingleTickerProvide
 
     return InkWell(
       onTap: onTap,
-      child: Container(
+      child: SizedBox(
         width: width,
         height: width, // 使用相同的宽高比
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(width / 2),
-          color: primaryColor,
-        ),
         child: Center(
-          child: Icon(icon, color: Colors.white70, size: size),
+          child: Icon(icon, color: primaryColor, size: size),
         ),
       ),
     );

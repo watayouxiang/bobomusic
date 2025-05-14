@@ -1,4 +1,5 @@
 import "package:bobomusic/db/db.dart";
+import "package:bobomusic/event_bus/event_bus.dart";
 import "package:bobomusic/modules/player/utils.dart";
 import "package:bot_toast/bot_toast.dart";
 import "package:flutter/material.dart";
@@ -102,8 +103,8 @@ class LyricPreviewState extends State<LyricPreview> {
                     }
                     player.current = musicItem;
                     EasyLoading.dismiss();
+                    eventBus.fire(RefresPlayerCard());
                     BotToast.showText(text: "应用成功");
-
                   }
                 }
               } catch(error) {
