@@ -1,6 +1,7 @@
 import "dart:async";
 
 import "package:audio_service/audio_service.dart";
+import "package:bobomusic/event_bus/event_bus.dart";
 import "package:bobomusic/modules/player/instance.dart";
 import "package:just_audio/just_audio.dart";
 import "package:bobomusic/origin_sdk/origin_types.dart";
@@ -94,6 +95,8 @@ class AudioPlayerHandler extends BaseAudioHandler {
   }
 
   void _broadcastState() {
+    eventBus.fire(ScrollLyric());
+
     final controls = [
       MediaControl.skipToPrevious,
       if (_playing) MediaControl.pause else MediaControl.play,

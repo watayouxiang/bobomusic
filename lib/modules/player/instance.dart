@@ -3,7 +3,6 @@ import "dart:convert";
 
 import "package:bobomusic/constants/cache_key.dart";
 import "package:bobomusic/db/db.dart";
-import "package:bobomusic/event_bus/event_bus.dart";
 import "package:bobomusic/modules/music_order/utils.dart";
 import "package:bobomusic/modules/player/const.dart";
 import "package:bobomusic/modules/player/source.dart";
@@ -140,7 +139,6 @@ class BBPlayer {
       await db.update(current!.orderName, musicItem2Row(music: current!.copyWith(duration: audio.duration!.inSeconds)));
     }
 
-    eventBus.fire(RefresPlayerCard());
     _updateLocalStorage();
   }
 
@@ -183,21 +181,21 @@ class BBPlayer {
       }
     }
 
-    eventBus.fire(RefresPlayerCard());
     _updateLocalStorage();
   }
 
   // 下一首
   Future<void> next() async {
     if (current == null) return;
+
     if (playerMode != PlayerMode.signalLoop) {
       await endNext();
     } else {
       await audio.seek(Duration.zero);
       await play(music: current);
       await audio.play();
-      eventBus.fire(RefresPlayerCard());
     }
+
     _updateLocalStorage();
   }
 
@@ -216,7 +214,7 @@ class BBPlayer {
       if (!audio.playing) {
         audio.play();
       }
-      eventBus.fire(RefresPlayerCard());
+
       _updateLocalStorage();
       return;
     }
@@ -238,7 +236,6 @@ class BBPlayer {
         await play(music: row2MusicItem(dbRow: randomList[0]));
       }
 
-      eventBus.fire(RefresPlayerCard());
       _updateLocalStorage();
 
       return;
@@ -272,7 +269,6 @@ class BBPlayer {
           await play(music: playerList.first);
         }
 
-        eventBus.fire(RefresPlayerCard());
         _updateLocalStorage();
         return;
       }
@@ -298,7 +294,6 @@ class BBPlayer {
         audio.play();
       }
 
-      eventBus.fire(RefresPlayerCard());
       _updateLocalStorage();
 
       return;
@@ -318,7 +313,6 @@ class BBPlayer {
           await play(music: playerList.first);
         }
 
-        eventBus.fire(RefresPlayerCard());
         _updateLocalStorage();
         return;
       }
@@ -340,7 +334,6 @@ class BBPlayer {
         audio.play();
       }
 
-      eventBus.fire(RefresPlayerCard());
       _updateLocalStorage();
     }
   }
@@ -364,6 +357,7 @@ class BBPlayer {
         playerMode = l[index + 1];
       }
     }
+
     _updateLocalStorage();
     // notifyListeners();
   }

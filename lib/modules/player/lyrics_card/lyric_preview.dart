@@ -100,10 +100,11 @@ class LyricPreviewState extends State<LyricPreview> {
                   if (id > -1) {
                     if (context.mounted) {
                       Navigator.of(context).pop();
+                      Navigator.of(context).pop();
                     }
                     player.current = musicItem;
                     EasyLoading.dismiss();
-                    eventBus.fire(RefresPlayerCard());
+                    eventBus.fire(ScrollLyric());
                     BotToast.showText(text: "应用成功");
                   }
                 }

@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import "package:bobomusic/components/custom_dialog/custom_dialog.dart";
+import "package:bobomusic/components/sheet/bottom_sheet.dart";
 import "package:bobomusic/constants/cache_key.dart";
 import "package:bobomusic/db/db.dart";
 import "package:bobomusic/event_bus/event_bus.dart";
@@ -50,8 +51,8 @@ class LyricsScrollerState extends State<LyricsScroller> with SingleTickerProvide
   void initState() {
     super.initState();
 
-    eventBus.on<RefresPlayerCard>().listen((event) {
-      doScroll(true);
+    eventBus.on<ScrollLyric>().listen((event) {
+      doScroll();
     });
 
     // 初始化一个空的 lyricModel
@@ -80,7 +81,7 @@ class LyricsScrollerState extends State<LyricsScroller> with SingleTickerProvide
     }
   }
 
-  Future<void> doScroll([bool? showTip = false]) async {
+  Future<void> doScroll() async {
     if (!context.mounted || !mounted) {
       return;
     }
@@ -101,11 +102,6 @@ class LyricsScrollerState extends State<LyricsScroller> with SingleTickerProvide
 
     if (dbMusic.isEmpty) {
       resetState();
-
-      if(showTip != null && showTip) {
-        BotToast.showText(text: "找不到歌词 QAQ");
-      }
-
       return;
     }
 
@@ -114,11 +110,6 @@ class LyricsScrollerState extends State<LyricsScroller> with SingleTickerProvide
 
       if (musicItem.lyric.isEmpty) {
         resetState();
-
-        if(showTip != null && showTip) {
-          BotToast.showText(text: "找不到歌词 QAQ");
-        }
-
         return;
       }
 
@@ -147,6 +138,7 @@ class LyricsScrollerState extends State<LyricsScroller> with SingleTickerProvide
     currentTime = parsedLyrics[currentLine]["time"];
 
     if (!player.isPlaying) {
+      _timer?.cancel(); // 确保先取消之前的 Timer
       return;
     }
 
@@ -164,10 +156,10 @@ class LyricsScrollerState extends State<LyricsScroller> with SingleTickerProvide
     });
   }
 
-  void moveLyricsBackward() {
-    BotToast.showText(text: "-0.5s");
+  void moveLyricsBackward(int speed, String tip) {
+    BotToast.showText(text: "歌词减速 $tip s");
     setState(() {
-      currentTime -= 500;
+      currentTime -= speed;
       // 重新找到后退后的歌词行
       for (int i = 0; i < parsedLyrics.length; i++) {
         if (parsedLyrics[i]["time"] > currentTime) {
@@ -181,10 +173,10 @@ class LyricsScrollerState extends State<LyricsScroller> with SingleTickerProvide
     });
   }
 
-  void moveLyricsForward() {
-    BotToast.showText(text: "+0.5s");
+  void moveLyricsForward(int speed, String tip) {
+    BotToast.showText(text: "歌词加速 $tip s");
     setState(() {
-      currentTime += 500;
+      currentTime += speed;
       // 重新找到前进后的歌词行
       for (int i = 0; i < parsedLyrics.length; i++) {
         if (parsedLyrics[i]["time"] > currentTime) {
@@ -198,16 +190,24 @@ class LyricsScrollerState extends State<LyricsScroller> with SingleTickerProvide
     });
   }
 
+  Future<bool> checkLyric() async {
+    final player = context.read<PlayerModel>();
+    final dbMusic = await db.queryByParam(player.current!.orderName, player.current!.playId);
+    final MusicItem musicItem = row2MusicItem(dbRow: dbMusic[0]);
+
+    if (musicItem.lyric.isEmpty) {
+      BotToast.showText(text: "没有歌词");
+      return false;
+    }
+
+    return true;
+  }
+
   Future<void> deleteLyric() async {
     EasyLoading.show(maskType: EasyLoadingMaskType.black);
 
     try {
       final player = context.read<PlayerModel>();
-
-      if (player.current!.lyric.isEmpty) {
-        BotToast.showText(text: "没有歌词");
-        return;
-      }
 
       final music = player.current!.copyWith(lyric: "");
       await db.update(player.current!.orderName, musicItem2Row(music: music));
@@ -224,10 +224,43 @@ class LyricsScrollerState extends State<LyricsScroller> with SingleTickerProvide
     EasyLoading.dismiss();
   }
 
+  openMoreMenu() {
+    openBottomSheet(context, [
+      SheetItem(
+        title: Text(
+          "删除歌词",
+          style: TextStyle(
+            color: Theme.of(context).primaryColor,
+            fontWeight: FontWeight.bold,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        onPressed: () async {
+          if (!await checkLyric()) {
+            return;
+          }
+
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return CustomDialog(
+                body: const Text("删除歌词?"),
+                onConfirm: () async {
+                  deleteLyric();
+                },
+                onCancel: () {
+                  Navigator.of(context).pop();
+                },
+              );
+            },
+          );
+        }
+      ),
+    ]);
+  }
+
   @override
   Widget build(BuildContext context) {
-    final player = context.read<PlayerModel>();
-
     return Stack(
       children: [
         Consumer<PlayerModel>(
@@ -247,14 +280,14 @@ class LyricsScrollerState extends State<LyricsScroller> with SingleTickerProvide
                   children: [
                     Text(
                       "没有歌词",
-                      style: TextStyle(color: primaryColor, fontSize: 16, fontWeight: FontWeight.bold),
+                      style: TextStyle(color: primaryColor, fontSize: 16, fontWeight: FontWeight.w500),
                     ),
                     const SizedBox(height: 30),
                     if(player.current!.orderName.isEmpty)
                         Text(
                           "当前歌曲不在任何歌单或者合集内，不支持匹配歌词",
                           textAlign: TextAlign.center,
-                          style: TextStyle(color: primaryColor, fontSize: 16, fontWeight: FontWeight.bold),
+                          style: TextStyle(color: primaryColor, fontSize: 16, fontWeight: FontWeight.w500),
                         ),
                     if(player.current!.orderName.isNotEmpty)
                       TextButton(
@@ -281,70 +314,80 @@ class LyricsScrollerState extends State<LyricsScroller> with SingleTickerProvide
             );
           },
         ),
-        // 优化后的底部控制区域布局
         Positioned(
           bottom: 0,
           left: 0,
           right: 0,
           child: Container(
             height: 50,
-            padding: EdgeInsets.symmetric(
-              horizontal: MediaQuery.of(context).size.width * 0.05, // 使用屏幕宽度的百分比
+            padding: const EdgeInsets.symmetric(
+              horizontal: 40,
             ),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround, // 改用 spaceAround 以获得更均匀的分布
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                // 后退按钮 - 保持原有功能
                 buildIconButton(
                   icon: Icons.keyboard_double_arrow_left_outlined,
-                  onTap: () {
-                    if (player.current!.lyric.isEmpty) {
-                      BotToast.showText(text: "没有歌词");
+                  onTap: () async {
+                    if (!await checkLyric()) {
                       return;
                     }
-                    moveLyricsBackward();
+                    moveLyricsBackward(2000, "2");
                   },
                   width: getButtonWidth(context, 0.1), // 使用自适应宽度
                 ),
-
-                // 删除按钮 - 保持原有功能
                 buildIconButton(
-                  icon: Icons.delete_forever_rounded,
-                  onTap: () {
-                    if (player.current!.lyric.isEmpty) {
-                      BotToast.showText(text: "没有歌词");
+                  icon: Icons.keyboard_arrow_left_rounded,
+                  onTap: () async {
+                    if (!await checkLyric()) {
                       return;
                     }
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return CustomDialog(
-                          body: const Text("删除歌词?"),
-                          onConfirm: () async {
-                            deleteLyric();
-                          },
-                          onCancel: () {
-                            Navigator.of(context).pop();
-                          },
-                        );
-                      },
-                    );
+                    moveLyricsBackward(500, "0.5");
                   },
-                  width: getButtonWidth(context, 0.1), // 中间按钮稍大一些
+                  width: getButtonWidth(context, 0.1), // 使用自适应宽度
                 ),
-
-                // 前进按钮 - 保持原有功能
+                buildIconButton(
+                  icon: Icons.keyboard_arrow_right_outlined,
+                  onTap: () async {
+                    if (!await checkLyric()) {
+                      return;
+                    }
+                    moveLyricsForward(500, "0.5");
+                  },
+                  width: getButtonWidth(context, 0.1), // 使用自适应宽度
+                ),
                 buildIconButton(
                   icon: Icons.keyboard_double_arrow_right_outlined,
-                  onTap: () {
-                    if (player.current!.lyric.isEmpty) {
-                      BotToast.showText(text: "没有歌词");
+                  onTap: () async {
+                    if (!await checkLyric()) {
                       return;
                     }
-                    moveLyricsForward();
+                    moveLyricsForward(2000, "2");
                   },
                   width: getButtonWidth(context, 0.1), // 使用自适应宽度
                 ),
+                Transform.translate(
+                  offset: const Offset(0, 1),
+                  child: buildIconButton(
+                    icon: Icons.center_focus_strong_rounded,
+                    onTap: () async {
+                      doScroll();
+                    },
+                    width: getButtonWidth(context, 0.1),
+                    size: 22
+                  ),
+                ),
+                Transform.translate(
+                  offset: const Offset(0, 1),
+                  child: buildIconButton(
+                    icon: Icons.more_vert_rounded,
+                    onTap: () async {
+                      openMoreMenu();
+                    },
+                    width: getButtonWidth(context, 0.1), // 使用自适应宽度
+                    size: 24
+                  )
+                )
               ],
             ),
           ),

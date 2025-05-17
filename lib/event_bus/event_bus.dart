@@ -21,6 +21,7 @@ class ShowLocalAction {}
 class RefreshTabList {}
 class RefreshCollectionList {}
 class RefresPlayerCard {}
+class ScrollLyric {}
 
 class ThemeColorChanged {
   final Color newColor;
