@@ -87,7 +87,7 @@ _buildList(context, player, h) {
   return SizedBox(
     height: h,
     child: ListView.builder(
-      padding: const EdgeInsets.only(bottom: 100),
+      padding: const EdgeInsets.only(bottom: 20),
       itemCount: player.playerList.length,
       itemBuilder: (context, index) {
         final item = player.playerList.toList()[index];

@@ -109,7 +109,7 @@ class MusicLocalState extends State<MusicLocal> {
           ),
         ) :
         ListView.builder(
-          padding: const EdgeInsets.only(bottom: 100),
+          padding: const EdgeInsets.only(bottom: 20),
           itemCount: musicList.length,
           itemBuilder: (context, index) {
             final item = musicList[index];

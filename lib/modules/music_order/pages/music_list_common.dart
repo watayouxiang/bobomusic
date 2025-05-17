@@ -83,7 +83,7 @@ class MusicListCommonState extends State<MusicListCommon> {
           child: const Center(child: Text("没有歌曲，去广场逛一逛吧 ~"))
         ) :
         ListView.builder(
-          padding: const EdgeInsets.only(bottom: 100),
+          padding: const EdgeInsets.only(bottom: 20),
           itemCount: musicList.length,
           itemBuilder: (context, index) {
             if (musicList.isEmpty) return null;

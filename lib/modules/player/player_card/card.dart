@@ -10,7 +10,9 @@ import "package:bobomusic/constants/covers.dart";
 import "package:bobomusic/db/db.dart";
 import "package:bobomusic/event_bus/event_bus.dart";
 import "package:bobomusic/modules/download/model.dart";
+import "package:bobomusic/modules/music_order/utils.dart";
 import "package:bobomusic/modules/player/lyrics_card/lyric_scroller.dart";
+import "package:bobomusic/modules/player/player_card/current_list.dart";
 import "package:bobomusic/modules/player/player_card/vinyl_record.dart";
 import "package:bobomusic/modules/player/utils.dart";
 import "package:bobomusic/origin_sdk/origin_types.dart";
@@ -21,6 +23,7 @@ import "package:flutter/material.dart";
 import "package:bobomusic/modules/player/player.dart";
 import "package:bobomusic/modules/player/model.dart";
 import "package:bobomusic/utils/clear_html_tags.dart";
+import "package:flutter_easyloading/flutter_easyloading.dart";
 import "package:flutter_svg/flutter_svg.dart";
 import "package:like_button/like_button.dart";
 import "package:provider/provider.dart";
@@ -234,6 +237,17 @@ class PlayerCardState extends State<PlayerCard> {
     }
   }
 
+  /// 显示当前播放列表
+  Future showCurrentList(BuildContext context, List<MusicItem> musicList) {
+    final NavigatorState navigator = Navigator.of(context, rootNavigator: false);
+    return navigator.push(ModalBottomSheetRoute(
+      isScrollControlled: true,
+      builder: (context) {
+        return CurrentList(musicList: musicList);
+      },
+    ));
+  }
+
   Widget _buildActionButtons(Color primaryColor) {
     final player = Provider.of<PlayerModel>(context, listen: false);
     final musicItem = player.current as MusicItem;
@@ -331,13 +345,25 @@ class PlayerCardState extends State<PlayerCard> {
               }
             },
           ),
-          RippleIcon(
-            size: 28,
-            onTap: () {
+          if(player.current!.orderName.isNotEmpty)
+            RippleIcon(
+              size: 28,
+              onTap: () async {
+                EasyLoading.show(maskType: EasyLoadingMaskType.black);
 
-            },
-            child: Icon(Icons.menu, size: 28, color: primaryColor),
-          )
+                try {
+                  final dbMusics = await getUpdatedMusicList(tabName: player.current!.orderName);
+
+                  EasyLoading.dismiss();
+
+                  showCurrentList(context, dbMusics);
+                } catch (error) {
+                  print(error);
+                  EasyLoading.dismiss();
+                }
+              },
+              child: Icon(Icons.menu, size: 28, color: primaryColor),
+            )
         ],
       ),
     );
