@@ -3,6 +3,7 @@
 import "dart:async";
 import "dart:ui";
 
+import "package:bobomusic/components/ripple_icon/ripple_icon.dart";
 import "package:bobomusic/icons/icons_svg.dart";
 import "package:bobomusic/modules/music_order/components/top_bar.dart";
 import "package:bobomusic/constants/covers.dart";
@@ -132,7 +133,7 @@ class PlayerCardState extends State<PlayerCard> {
 
   Widget _buildRecordWidget() {
     return Container(
-      padding: const EdgeInsets.only(left: 20, top: 30, right: 20),
+      padding: const EdgeInsets.only(left: 20, top: 20, right: 20),
       child: ClipRRect(
         borderRadius: const BorderRadius.all(Radius.circular(10)),
         child: VinylRecordWidget(
@@ -243,9 +244,10 @@ class PlayerCardState extends State<PlayerCard> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          InkWell(
+          RippleIcon(
+            size: 28,
             child: Transform.translate(
-              offset: const Offset(0, 0),
+              offset: const Offset(0, 1),
               child: Icon(Icons.download_outlined, color: primaryColor, size: 28),
             ),
             onTap: () {
@@ -260,7 +262,7 @@ class PlayerCardState extends State<PlayerCard> {
               });
             },
           ),
-          LikeButton(
+          Padding(padding: const EdgeInsets.all(8), child: LikeButton(
             size: 28,
             animationDuration: const Duration(seconds: 1),
             circleColor: const CircleColor(start: Color(0xff00ddff), end: Color(0xff0099cc)),
@@ -310,8 +312,9 @@ class PlayerCardState extends State<PlayerCard> {
 
               return isLike;
             },
-          ),
-          InkWell(
+          )),
+          RippleIcon(
+            size: 28,
             child: SvgPicture.string(
               IconsSVG.bilibili,
               color: primaryColor,
@@ -328,6 +331,13 @@ class PlayerCardState extends State<PlayerCard> {
               }
             },
           ),
+          RippleIcon(
+            size: 28,
+            onTap: () {
+
+            },
+            child: Icon(Icons.menu, size: 28, color: primaryColor),
+          )
         ],
       ),
     );
@@ -508,7 +518,7 @@ class PlayerCardState extends State<PlayerCard> {
                             ),
                             PlayerProgress(color: primaryColor),
                             _buildControlButtons(primaryColor),
-                            const SizedBox(height: 60),
+                            const SizedBox(height: 50),
                           ],
                         ),
                   ),

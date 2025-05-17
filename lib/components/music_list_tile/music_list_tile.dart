@@ -1,3 +1,4 @@
+import "package:bobomusic/components/ripple_icon/ripple_icon.dart";
 import "package:bobomusic/components/text_tags/tags.dart";
 import "package:bobomusic/modules/player/model.dart";
 import "package:bobomusic/origin_sdk/origin_types.dart";
@@ -49,7 +50,7 @@ class MusicListTitleState extends State<MusicListTile> with SingleTickerProvider
     }
 
     tags.add(seconds2duration(widget.music.duration));
-    
+
     return Consumer<PlayerModel>(builder: (context, player, child) {
       if (player.current != null) {
         if (player.current!.playId.isNotEmpty && player.current!.orderName.isNotEmpty) {
@@ -88,17 +89,18 @@ class MusicListTitleState extends State<MusicListTile> with SingleTickerProvider
             playingIcon
           ],
         ),
-        leading: widget.showAddIcon ? InkWell(
+        leading: widget.showAddIcon ? RippleIcon(
+          size: 20,
           onTap: () {
             Provider.of<PlayerModel>(context, listen: false).addPlayerList([widget.music], showToast: true);
           },
           child: Icon(Icons.add_circle, size: 20, color: mainColor),
         ) : null,
         subtitle: TextTags(tags: tags, textStyle: TextStyle(fontSize: 8, color: mainColor)),
-        trailing: InkWell(
-          borderRadius: BorderRadius.circular(4.0),
+        trailing: RippleIcon(
+          size: 22,
           onTap: widget.onMore,
-          child: Icon(Icons.more_vert, color: mainColor),
+          child: Icon(Icons.more_vert, size: 22, color: mainColor),
         ),
         onTap: () {
           Provider.of<PlayerModel>(context, listen: false).play(music: widget.music);

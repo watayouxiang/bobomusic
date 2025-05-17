@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import "package:bobomusic/components/custom_dialog/custom_dialog.dart";
+import "package:bobomusic/components/ripple_icon/ripple_icon.dart";
 import "package:bobomusic/components/sheet/bottom_sheet.dart";
 import "package:bobomusic/constants/cache_key.dart";
 import "package:bobomusic/db/db.dart";
@@ -45,7 +46,7 @@ class LyricsScrollerState extends State<LyricsScroller> with SingleTickerProvide
   Timer? _timer;
   int currentTime = 0;
   late LyricsReaderModel lyricModel;
-  var lyricUI = UINetease();
+  var lyricUI = UINetease(defaultSize: 16);
 
   @override
   void initState() {
@@ -193,14 +194,21 @@ class LyricsScrollerState extends State<LyricsScroller> with SingleTickerProvide
   Future<bool> checkLyric() async {
     final player = context.read<PlayerModel>();
     final dbMusic = await db.queryByParam(player.current!.orderName, player.current!.playId);
-    final MusicItem musicItem = row2MusicItem(dbRow: dbMusic[0]);
 
-    if (musicItem.lyric.isEmpty) {
-      BotToast.showText(text: "没有歌词");
-      return false;
+    if (dbMusic.isNotEmpty) {
+      final MusicItem musicItem = row2MusicItem(dbRow: dbMusic[0]);
+
+      if (musicItem.lyric.isEmpty) {
+        BotToast.showText(text: "没有歌词");
+        return false;
+      }
+
+      return true;
+    } else {
+      BotToast.showText(text: "出错了，请重新播放歌曲试试");
     }
 
-    return true;
+    return false;
   }
 
   Future<void> deleteLyric() async {
@@ -369,7 +377,7 @@ class LyricsScrollerState extends State<LyricsScroller> with SingleTickerProvide
                 Transform.translate(
                   offset: const Offset(0, 1),
                   child: buildIconButton(
-                    icon: Icons.center_focus_strong_rounded,
+                    icon: Icons.center_focus_strong,
                     onTap: () async {
                       doScroll();
                     },
@@ -411,7 +419,8 @@ class LyricsScrollerState extends State<LyricsScroller> with SingleTickerProvide
   }) {
     final primaryColor = Theme.of(context).primaryColor;
 
-    return InkWell(
+    return RippleIcon(
+      size: size,
       onTap: onTap,
       child: SizedBox(
         width: width,
