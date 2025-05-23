@@ -38,7 +38,7 @@ class AppBottomBar extends StatelessWidget {
             currentIndex: currentIndex,
             elevation: 3,
             type: BottomNavigationBarType.fixed,
-            iconSize: 18,
+            iconSize: 20,
             selectedFontSize: 10,
             unselectedFontSize: 10,
             selectedItemColor: Theme.of(context).primaryColor,
