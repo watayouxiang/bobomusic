@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import "dart:async";
 
 import "package:bobomusic/components/sheet/bottom_sheet.dart";
@@ -116,6 +118,22 @@ class SearchViewState extends State<SearchView> {
           player.addPlayerList([music]);
         },
       ),
+      if(detail.isSeasonDisplay)
+        SheetItem(
+          title: const Text("查看所在合集"),
+          onPressed: () async {
+            final result = await getVideoDetail(detail);
+            viewCollectionList(result);
+          },
+        ),
+      if(detail.isSeasonDisplay)
+        SheetItem(
+          title: const Text("收藏所在合集"),
+          onPressed: () async {
+            final result = await getVideoDetail(detail);
+            await collectionList(result);
+          },
+        ),
     ]);
   }
 
@@ -135,81 +153,108 @@ class SearchViewState extends State<SearchView> {
       SheetItem(
         title: const Text("查看合集"),
         onPressed: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => MusicOrderDetail(
-                shouldLoadData: false,
-                musicOrderItem: MusicOrderItem(
-                  id: detail.id,
-                  cover: detail.cover,
-                  name: detail.name,
-                  author: detail.author,
-                  desc: "",
-                  musicList: detail.musicList ?? [],
-                ),
-              ),
-            ),
-          );
+          viewCollectionList(detail);
         },
       ),
       SheetItem(
         title: const Text("收藏合集"),
         onPressed: () async {
-          EasyLoading.show(maskType: EasyLoadingMaskType.black);
-          final musicListTableName = genMusicListTableName(id: detail.id);
-          final DBCollection dbCollection = DBCollection();
-
-          try {
-            final List<Map<String, dynamic>> dbcList = await dbCollection.queryAll(TableName.collection);
-            final index = dbcList.indexWhere((item) => item["musicListTableName"] as String == musicListTableName);
-
-            if(index >= 0) {
-              EasyLoading.dismiss();
-              BotToast.showText(text: "该合集已经收藏了");
-              return;
-            }
-
-            final id = await dbCollection.insert(TableName.collection, collection2Row(
-              collection: CollectionItemType(
-                id: detail.id,
-                cover: detail.cover,
-                name: detail.name,
-                author: detail.author,
-                origin: detail.origin,
-                musicListTableName: musicListTableName,
-              ))
-            );
-
-            if (id > -1) {
-              final DBOrder db = DBOrder(version: 2);
-
-              if(!await db.isTableExists(musicListTableName)) {
-                await db.createOrderTable(musicListTableName);
-              }
-
-              for (var music in detail.musicList!) {
-                final newM = music.copyWith(playId: uuid.v4(), orderName: musicListTableName);
-                await db.insert(musicListTableName, musicItem2Row(music: newM));
-              }
-
-              EasyLoading.dismiss();
-            }
-
-            eventBus.fire(RefreshCollectionList());
-
-            BotToast.showText(text: "收藏成功");
-          } catch(error) {
-            EasyLoading.dismiss();
-            BotToast.showText(text: "收藏出错辽 ~");
-            await dbCollection.delete(TableName.collection, musicListTableName);
-
-            if (await db.isTableExists(musicListTableName)) {
-              await db.dropTable(musicListTableName);
-            }
-          }
+          await collectionList(detail);
         },
       ),
     ]);
+  }
+
+  /// 获取视频所在合集
+  Future<SearchItem> getVideoDetail(SearchItem detail) async {
+    final collection = await service.searchSeason(detail.ugcSeason!.mid, detail.ugcSeason!.seasonId);
+    final result = SearchItem(
+      id: "${collection!.meta.seasonId}",
+      cover: collection.meta.cover,
+      name: collection.meta.name,
+      duration: 0,
+      author: "",
+      origin: OriginType.bili,
+      isSeasonDisplay: false,
+      musicList: collection.musicList
+    );
+
+    return result;
+  }
+
+  /// 查看合集详情
+  viewCollectionList(SearchItem detail) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => MusicOrderDetail(
+          shouldLoadData: false,
+          musicOrderItem: MusicOrderItem(
+            id: detail.id,
+            cover: detail.cover,
+            name: detail.name,
+            author: detail.author,
+            desc: "",
+            musicList: detail.musicList ?? [],
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// 收藏合集
+  Future<void> collectionList(SearchItem detail) async {
+    EasyLoading.show(maskType: EasyLoadingMaskType.black);
+    final musicListTableName = genMusicListTableName(id: detail.id);
+    final DBCollection dbCollection = DBCollection();
+
+    try {
+      final List<Map<String, dynamic>> dbcList = await dbCollection.queryAll(TableName.collection);
+      final index = dbcList.indexWhere((item) => item["musicListTableName"] as String == musicListTableName);
+
+      if(index >= 0) {
+        EasyLoading.dismiss();
+        BotToast.showText(text: "该合集已经收藏了");
+        return;
+      }
+
+      final id = await dbCollection.insert(TableName.collection, collection2Row(
+        collection: CollectionItemType(
+          id: detail.id,
+          cover: detail.cover,
+          name: detail.name,
+          author: detail.author,
+          origin: detail.origin,
+          musicListTableName: musicListTableName,
+        ))
+      );
+
+      if (id > -1) {
+        final DBOrder db = DBOrder(version: 2);
+
+        if(!await db.isTableExists(musicListTableName)) {
+          await db.createOrderTable(musicListTableName);
+        }
+
+        for (var music in detail.musicList!) {
+          final newM = music.copyWith(playId: uuid.v4(), orderName: musicListTableName);
+          await db.insert(musicListTableName, musicItem2Row(music: newM));
+        }
+
+        EasyLoading.dismiss();
+      }
+
+      eventBus.fire(RefreshCollectionList());
+
+      BotToast.showText(text: "收藏成功");
+    } catch(error) {
+      EasyLoading.dismiss();
+      BotToast.showText(text: "收藏出错辽 ~");
+      await dbCollection.delete(TableName.collection, musicListTableName);
+
+      if (await db.isTableExists(musicListTableName)) {
+        await db.dropTable(musicListTableName);
+      }
+    }
   }
 
   @override

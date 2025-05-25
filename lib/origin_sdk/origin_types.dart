@@ -69,6 +69,8 @@ class SearchItem {
   final SearchType? type; // 类型
   final OriginType origin; // 来源
   final List<MusicItem>? musicList; // 音乐列表 Type 为 orderName 时会有
+  final bool isSeasonDisplay;
+  final UgcSeason? ugcSeason;
 
   const SearchItem({
     required this.id,
@@ -77,8 +79,20 @@ class SearchItem {
     required this.duration,
     required this.author,
     required this.origin,
+    required this.isSeasonDisplay,
+    this.ugcSeason,
     this.musicList,
     this.type,
+  });
+}
+
+class UgcSeason {
+  final int mid;
+  final int seasonId;
+
+  const UgcSeason({
+    required this.mid,
+    required this.seasonId,
   });
 }
 

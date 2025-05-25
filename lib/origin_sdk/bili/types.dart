@@ -72,6 +72,8 @@ class BiliSearchItem extends SearchItem {
     required super.duration,
     required super.author,
     required super.origin,
+    required super.isSeasonDisplay,
+    required super.ugcSeason,
     super.musicList,
     super.type,
   });
@@ -120,14 +122,69 @@ class BiliSearchItem extends SearchItem {
       cover: json["pic"],
       name: clearHtmlTags(json["title"]),
       duration: json["duration"] is String
-          ? duration2seconds(json["duration"])
-          : json["duration"],
+        ? duration2seconds(json["duration"])
+        : json["duration"],
       author: json["author"] ?? "",
       origin: OriginType.bili,
       type: type,
       musicList: musicList,
+      isSeasonDisplay: json["is_season_display"] ?? false,
+      ugcSeason: json["ugc_season"] != null ? UgcSeason(mid: json["ugc_season"]["mid"], seasonId: json["ugc_season"]["id"]) : null,
     );
   }
+}
+/// 搜索条目
+class BiliSearchSeasonItem {
+  final Meta meta;
+  final List<MusicItem> musicList;
+
+  const BiliSearchSeasonItem({
+    required this.meta,
+    required this.musicList,
+  });
+
+  factory BiliSearchSeasonItem.fromJson(Map<String, dynamic> json) {
+    final jsonMeta = json["meta"];
+    final jsonArchives = json["archives"];
+    List<MusicItem> musicList = [];
+
+    for (var archive in jsonArchives) {
+      musicList.add(
+        MusicItem(
+          id: BiliId(
+            aid: "${archive["aid"]}",
+            bvid: "${archive["bvid"]}",
+          ).decode(),
+          cover: archive["pic"],
+          name: clearHtmlTags(archive["title"]),
+          duration: archive["duration"] is String
+            ? duration2seconds(archive["duration"])
+            : archive["duration"],
+          author: archive["author"] ?? "",
+          origin: OriginType.bili,
+        )
+      );
+    }
+
+    return BiliSearchSeasonItem(
+      meta: Meta(mid: jsonMeta["mid"], name: jsonMeta["name"], seasonId: jsonMeta["season_id"], cover: jsonMeta["cover"]),
+      musicList: musicList,
+    );
+  }
+}
+
+class Meta {
+  final int mid;
+  final String name;
+  final String cover;
+  final int seasonId;
+
+  Meta({
+    required this.mid,
+    required this.name,
+    required this.cover,
+    required this.seasonId,
+  });
 }
 
 class BiliMusicDetail extends MusicDetail {

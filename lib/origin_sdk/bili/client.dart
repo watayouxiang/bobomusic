@@ -157,6 +157,28 @@ class BiliClient implements OriginService {
     }
   }
 
+  // 搜索视频所在系列或合集
+  Future<BiliSearchSeasonItem?> searchSeason(int mid, int seasonId) async {
+    await init();
+    const url = "https://api.bilibili.com/x/polymer/web-space/seasons_archives_list";
+    Map<String, String> query = _signParams({
+      "mid": "$mid",
+      "season_id": "$seasonId",
+      "page_num": "1",
+      "page_size": "30",
+    });
+    final response = await dio.get(
+      Uri.parse(url).replace(queryParameters: query).toString(),
+    );
+
+    if (response.statusCode == 200) {
+      final data = response.data["data"];
+      return BiliSearchSeasonItem.fromJson(data);
+    } else {
+      throw response.data;
+    }
+  }
+
   // 搜索建议
   @override
   Future<List<SearchSuggestItem>> searchSuggest(String keyword) async {
