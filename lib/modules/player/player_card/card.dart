@@ -637,6 +637,17 @@ class _PlayerProgressState extends State<PlayerProgress> {
                 final player = Provider.of<PlayerModel>(context, listen: false);
                 int v = (value * total).toInt();
                 player.seek(Duration(seconds: v));
+
+                // 使得歌词滚动到正确位置
+                Timer(const Duration(seconds: 1), () {
+                  if (player.isPlaying) {
+                    player.pause();
+                    player.play();
+                  } else {
+                    player.pause();
+                  }
+                });
+
                 setState(() {
                   _isChanged = false;
                 });

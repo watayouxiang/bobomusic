@@ -377,17 +377,6 @@ class LyricsScrollerState extends State<LyricsScroller> with SingleTickerProvide
                 Transform.translate(
                   offset: const Offset(0, 1),
                   child: buildIconButton(
-                    icon: Icons.center_focus_strong,
-                    onTap: () async {
-                      doScroll();
-                    },
-                    width: getButtonWidth(context, 0.1),
-                    size: 22
-                  ),
-                ),
-                Transform.translate(
-                  offset: const Offset(0, 1),
-                  child: buildIconButton(
                     icon: Icons.more_vert_rounded,
                     onTap: () async {
                       openMoreMenu();
