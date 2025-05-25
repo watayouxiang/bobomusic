@@ -16,15 +16,15 @@ class AppNavigationState extends State<AppNavigation> {
   final PageController _pageController = PageController();
 
   final List<MenuData> menus = const [
-    MenuData(label: "歌单", icon: Icons.queue_music),
-    MenuData(label: "广场", icon: Icons.people_outlined),
-    MenuData(label: "设置", icon: Icons.settings),
-  ]; 
+    MenuData(label: "歌单", icon: Icon(Icons.queue_music, size: 22)),
+    MenuData(label: "广场", icon: Icon(Icons.people_outlined, size: 21)),
+    MenuData(label: "设置", icon: Icon(Icons.settings, size: 19)),
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: [ 
+      children: [
         Expanded(child: _buildContent(_index)),
         AppBottomBar(
           currentIndex: _index,

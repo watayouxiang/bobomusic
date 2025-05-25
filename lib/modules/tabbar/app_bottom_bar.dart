@@ -2,7 +2,7 @@ import "package:flutter/material.dart";
 
 class MenuData {
   final String label;
-  final IconData icon;
+  final Icon icon;
   const MenuData({
     required this.label,
     required this.icon,
@@ -38,7 +38,6 @@ class AppBottomBar extends StatelessWidget {
             currentIndex: currentIndex,
             elevation: 3,
             type: BottomNavigationBarType.fixed,
-            iconSize: 20,
             selectedFontSize: 10,
             unselectedFontSize: 10,
             selectedItemColor: Theme.of(context).primaryColor,
@@ -55,7 +54,7 @@ class AppBottomBar extends StatelessWidget {
   BottomNavigationBarItem _buildItemByMenuMeta(MenuData menu) {
     return BottomNavigationBarItem(
       label: menu.label,
-      icon: Icon(menu.icon),
+      icon: menu.icon,
     );
   }
 }
