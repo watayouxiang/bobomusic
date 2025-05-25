@@ -46,6 +46,16 @@
 
 <br/>
 
+# 预览
+
+<img src="./screenshot/preview-1.jpg" alt="bobomusic" />
+<img src="./screenshot/preview-2.jpg" alt="bobomusic" />
+<img src="./screenshot/preview-3.jpg" alt="bobomusic" />
+<img src="./screenshot/preview-4.jpg" alt="bobomusic" />
+<img src="./screenshot/preview-5.jpg" alt="bobomusic" />
+
+<br/>
+
 # 下载
 
 ## Android 
